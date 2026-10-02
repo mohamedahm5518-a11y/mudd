@@ -14,7 +14,7 @@
 </head>
 <body class="min-h-screen pb-12">
 
-    <!-- الهيدر (بدون زر إدارة ظاهر - اضغط 5 مرات على اللوجو لفتح الإدارة) -->
+    <!-- الهيدر -->
     <header class="bg-slate-900 border-b border-slate-800 p-4 text-center sticky top-0 z-40">
         <div class="max-w-md mx-auto flex justify-between items-center">
             <div onclick="handleLogoClick()" class="flex items-center gap-3 cursor-pointer select-none" title="اضغط 5 مرات لفتح الإدارة">
@@ -39,6 +39,12 @@
 
         <!-- قائمة المنتجات -->
         <div id="products-list" class="space-y-4"></div>
+
+        <!-- ⭐ قسم ريفيوهات العملاء -->
+        <div class="mt-6 space-y-2">
+            <h3 class="font-bold text-sm text-slate-400 mb-2">⭐ آراء عملائنا المميزين:</h3>
+            <div id="reviews-list" class="space-y-3"></div>
+        </div>
 
         <!-- سلة المشتريات -->
         <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-3 mt-6">
@@ -100,8 +106,18 @@
 
             <p class="text-[11px] text-slate-400 text-center">* برجاء إرسال سكرين شوت التحويل مع الأوردر على الواتساب.</p>
             
-            <button onclick="prepareOrderReview()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-emerald-900/30 flex items-center justify-center gap-2 cursor-pointer mt-2">
-                💬 مراجعة وتأكيد الأوردر للواتساب
+            <button onclick="sendOrderDirectly()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-emerald-900/30 flex items-center justify-center gap-2 cursor-pointer mt-2">
+                💬 إرسال الأوردر للواتساب مباشرة 🚀
+            </button>
+        </div>
+
+        <!-- صندوق التواصل المباشر (استفسار عن الاستاند أو المنتج) -->
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-3 mt-6 neon-border">
+            <h4 class="font-bold text-sm text-white flex items-center gap-1.5">💬 عندك استفسار أو عجبك الاستاند؟ تواصل معنا مباشرة</h4>
+            <p class="text-[11px] text-slate-400">اكتب استفسارك أو رسالتك وسيتواصل معك المالك فوراً عبر الواتساب:</p>
+            <textarea id="direct-msg" placeholder="اكتب رسالتك أو سؤالك هنا..." rows="2" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-blue-500 resize-none"></textarea>
+            <button type="button" onclick="sendDirectMessage()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition text-xs cursor-pointer shadow-md shadow-blue-900/30 flex items-center justify-center gap-2">
+                📲 إرسال استفسارك على واتساب
             </button>
         </div>
 
@@ -109,24 +125,6 @@
         <div id="social-links-container" class="flex justify-center gap-3 pt-4 flex-wrap"></div>
 
     </main>
-
-    <!-- نافذة تأكيد الأوردر النهائية -->
-    <div id="order-confirm-modal" class="fixed inset-0 bg-black/80 backdrop-sm hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 w-full max-w-sm p-6 rounded-3xl space-y-4">
-            <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-                <h3 class="font-bold text-base text-white">📋 فاتورة تأكيد الأوردر</h3>
-                <span id="modal-order-id" class="text-xs text-blue-400 font-mono font-bold"></span>
-            </div>
-            <div id="confirm-modal-content" class="text-xs text-slate-300 space-y-2 bg-slate-950 p-3 rounded-xl border border-slate-800 max-h-60 overflow-y-auto">
-                <!-- تفاصيل الأوردر -->
-            </div>
-            <p class="text-[11px] text-amber-400 text-center">⚠️ بالضغط على تأكيد سيتم توجيهك فوراً لإرسال الطلب رسمياً.</p>
-            <div class="flex gap-2 pt-2">
-                <button type="button" onclick="sendOrderToWhatsApp()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-2.5 rounded-xl font-bold transition cursor-pointer text-xs shadow-lg shadow-emerald-950">تأكيد وإرسال للواتساب 🚀</button>
-                <button type="button" onclick="closeOrderConfirmModal()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2.5 rounded-xl transition cursor-pointer text-xs">تعديل ✕</button>
-            </div>
-        </div>
-    </div>
 
     <!-- نافذة تسجيل دخول الإدارة (PIN Code) -->
     <div id="admin-modal" class="fixed inset-0 bg-black/80 backdrop-sm hidden z-50 flex items-center justify-center p-4">
@@ -147,6 +145,46 @@
             <div class="flex justify-between items-center border-b border-slate-800 pb-3">
                 <h3 class="font-bold text-lg text-blue-400">⚙️ لوحة تعديل Vigor</h3>
                 <button onclick="closeAdminPanel()" class="bg-slate-800 px-3 py-1.5 rounded-lg text-xs text-white cursor-pointer">إلغاء ✕</button>
+            </div>
+
+            <!-- 📊 إحصائيات المتجر -->
+            <div class="bg-slate-900 border border-emerald-500/40 p-3 rounded-xl space-y-2">
+                <h4 class="font-bold text-emerald-400 text-sm">📊 إحصائيات المتجر وأداء اللينك:</h4>
+                <div class="grid grid-cols-2 gap-2 pt-1">
+                    <div class="bg-slate-950 p-2.5 rounded-lg text-center border border-slate-800">
+                        <span class="text-[10px] text-slate-400 block">إجمالي الزيارات 👁️</span>
+                        <span id="stat-visits" class="font-bold text-white text-base">0</span>
+                    </div>
+                    <div class="bg-slate-950 p-2.5 rounded-lg text-center border border-slate-800">
+                        <span class="text-[10px] text-slate-400 block">الأوردرات المُرسلة 📦</span>
+                        <span id="stat-orders" class="font-bold text-blue-400 text-base">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ⭐ قسم إدارة ريفيوهات العملاء -->
+            <div class="bg-slate-900 border border-yellow-500/40 p-3 rounded-xl space-y-3">
+                <h4 class="font-bold text-yellow-400 text-sm">⭐ إضافة وتعديل ريفيوهات العملاء:</h4>
+                <div>
+                    <span class="text-xs text-slate-400 block mb-1">اسم العميل:</span>
+                    <input type="text" id="new-rev-name" placeholder="مثال: أحمد ممدوح" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white">
+                </div>
+                <div>
+                    <span class="text-xs text-slate-400 block mb-1">التقييم:</span>
+                    <select id="new-rev-rating" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white">
+                        <option value="5">⭐⭐⭐⭐⭐ (5 نجوم)</option>
+                        <option value="4">⭐⭐⭐⭐ (4 نجوم)</option>
+                        <option value="3">⭐⭐⭐ (3 نجوم)</option>
+                    </select>
+                </div>
+                <div>
+                    <span class="text-xs text-slate-400 block mb-1">نص الريفيو أو التعليق:</span>
+                    <textarea id="new-rev-comment" placeholder="اكتب رأي العميل هنا..." rows="2" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white resize-none"></textarea>
+                </div>
+                <button type="button" onclick="addNewReview()" class="w-full bg-yellow-600 hover:bg-yellow-500 text-white text-xs py-2.5 rounded-lg font-bold cursor-pointer">إضافة الريفيو للمتجر ⭐</button>
+                
+                <!-- قائمة الريفيوهات الحالية للحذف -->
+                <div id="admin-reviews-list" class="space-y-2 pt-2 border-t border-slate-800"></div>
             </div>
 
             <!-- التحكم في شاشة العروض والبانر الترويجي -->
@@ -272,13 +310,22 @@
     </footer>
 
     <script>
+        let visits = parseInt(localStorage.getItem('tapio_vigor_visits') || 0) + 1;
+        localStorage.setItem('tapio_vigor_visits', visits);
+
         let defaultProducts = [
             { id: 1, name: "تريننج شتوي رياضي (Vigor)", price: 650, available: true, sizes: ["M", "L", "XL", "XXL"], colors: ["أسود", "كحلي", "رمادي"], image: "https://images.unsplash.com/photo-1518310383802-640c2de311b2?w=500" },
             { id: 2, name: "تيشيرت جيم Dri-Fit", price: 250, available: true, sizes: ["S", "M", "L", "XL"], colors: ["أبيض", "أسود", "أزرق نيون"], image: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500" },
             { id: 3, name: "شورت رياضي بجيوب بسحاب", price: 200, available: true, sizes: ["M", "L", "XL"], colors: ["أسود", "رمادي غامق"], image: "https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=500" }
         ];
 
+        let defaultReviews = [
+            { id: 1, name: "أحمد ممدوح", rating: 5, comment: "الخامة تحفة والمقاس مظبوط جداً، شكراً Vigor على المصداقية 🔥" },
+            { id: 2, name: "محمود إبراهيم", rating: 5, comment: "التريننج وصل في أسرع وقت وخامات عالية الجودة، أنصح بالتعامل معهم 💯" }
+        ];
+
         let products = JSON.parse(localStorage.getItem('tapio_vigor_products')) || defaultProducts;
+        let reviews = JSON.parse(localStorage.getItem('tapio_vigor_reviews')) || defaultReviews;
         let adminPin = localStorage.getItem('tapio_vigor_pin') || "1234";
         let settings = JSON.parse(localStorage.getItem('tapio_vigor_settings')) || {
             logo: "",
@@ -300,9 +347,7 @@
         let cart = [];
         let selectedSelections = {};
         let activeWalletNum = "";
-        let currentOrderText = "";
 
-        // طريقة فتح لوحة التحكم بالضغط 5 مرات على الشعار
         let logoClicks = 0;
         let logoTimer = null;
         function handleLogoClick() {
@@ -339,6 +384,70 @@
                     <p class="text-xs text-slate-300 mt-1">${settings.bannerDesc || ''}</p>
                 </div>
             `;
+        }
+
+        function renderReviews() {
+            let container = document.getElementById('reviews-list');
+            container.innerHTML = '';
+            if(reviews.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-500 text-center py-2">لا توجد آراء مضافة حالياً..</p>`;
+                return;
+            }
+            reviews.forEach(r => {
+                let stars = "⭐".repeat(parseInt(r.rating) || 5);
+                container.innerHTML += `
+                    <div class="bg-slate-900 border border-slate-800 p-3 rounded-xl space-y-1">
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-white text-xs">${r.name}</span>
+                            <span class="text-[11px]">${stars}</span>
+                        </div>
+                        <p class="text-xs text-slate-300">${r.comment}</p>
+                    </div>
+                `;
+            });
+        }
+
+        function renderAdminReviews() {
+            let container = document.getElementById('admin-reviews-list');
+            container.innerHTML = '';
+            reviews.forEach((r, index) => {
+                container.innerHTML += `
+                    <div class="flex justify-between items-center bg-slate-950 p-2 rounded-lg border border-slate-800 text-xs">
+                        <div>
+                            <span class="font-bold text-white">${r.name}:</span>
+                            <span class="text-slate-400 truncate max-w-[150px] inline-block align-bottom"> ${r.comment}</span>
+                        </div>
+                        <button type="button" onclick="deleteReview(${index})" class="text-red-400 hover:text-red-300 font-bold px-2 py-1 cursor-pointer">حذف ✕</button>
+                    </div>
+                `;
+            });
+        }
+
+        function addNewReview() {
+            let name = document.getElementById('new-rev-name').value.trim();
+            let rating = document.getElementById('new-rev-rating').value;
+            let comment = document.getElementById('new-rev-comment').value.trim();
+
+            if(!name || !comment) {
+                alert("من فضلك اكتب اسم العميل ونص التعليق!");
+                return;
+            }
+
+            reviews.push({ id: Date.now(), name, rating, comment });
+            localStorage.setItem('tapio_vigor_reviews', JSON.stringify(reviews));
+            renderReviews();
+            renderAdminReviews();
+
+            document.getElementById('new-rev-name').value = '';
+            document.getElementById('new-rev-comment').value = '';
+            alert("تم إضافة الريفيو بنجاح للمتجر! ⭐✨");
+        }
+
+        function deleteReview(index) {
+            reviews.splice(index, 1);
+            localStorage.setItem('tapio_vigor_reviews', JSON.stringify(reviews));
+            renderReviews();
+            renderAdminReviews();
         }
 
         function renderProducts() {
@@ -551,7 +660,7 @@
             }
         }
 
-        function prepareOrderReview() {
+        function sendOrderDirectly() {
             let name = document.getElementById('cust-name').value.trim();
             let address = document.getElementById('cust-address').value.trim();
             let paymentMethod = document.getElementById('payment-method').value;
@@ -566,46 +675,52 @@
                 return;
             }
 
+            let ordersCount = parseInt(localStorage.getItem('tapio_vigor_orders_count') || 0) + 1;
+            localStorage.setItem('tapio_vigor_orders_count', ordersCount);
+
             let orderId = "#VIGOR-" + Math.floor(1000 + Math.random() * 9000);
             let payText = "الدفع عند الاستلام (كاش)";
             if(paymentMethod === 'instapay') payText = `انستاباي (${settings.instapay})`;
             if(paymentMethod === 'wallet') payText = `محفظة إلكترونية (رقم: ${activeWalletNum || 'لم يتم تحديد الشبكة'})`;
 
             let orderText = `⚡ أوردر جديد من متجر Vigor:\n📌 رقم الطلب: ${orderId}\n\n👤 الاسم: ${name}\n📍 العنوان: ${address}\n💳 طريقة الدفع: ${payText}\n\n📦 المنتجات المطلوبة:\n`;
-            let modalHTML = `<p class="font-bold text-white mb-2">رقم الطلب: <span class="text-blue-400">${orderId}</span></p><p class="text-slate-400 mb-1">الاسم: ${name}</p><p class="text-slate-400 mb-2">العنوان: ${address}</p><div class="border-t border-slate-800 pt-2 space-y-1">`;
-            
             let totalOrderPrice = 0;
 
             cart.forEach((item) => {
                 let itemTotal = item.price * item.qty;
                 totalOrderPrice += itemTotal;
                 orderText += `- ${item.name} | المقاس: ${item.size} | اللون: ${item.color} | الكمية: ${item.qty} | الإجمالي: ${itemTotal} ج.م\n`;
-                modalHTML += `<p>• ${item.name} (${item.qty}x) - ${item.size} / ${item.color} - <b>${itemTotal} ج.م</b></p>`;
             });
 
             orderText += `\n💰 إجمالي الأوردر: ${totalOrderPrice} ج.م`;
-            modalHTML += `</div><p class="border-t border-slate-800 pt-2 font-bold text-blue-400 mt-2">الإجمالي الكلي: ${totalOrderPrice} ج.م</p>`;
 
-            currentOrderText = orderText;
-            document.getElementById('modal-order-id').innerText = orderId;
-            document.getElementById('confirm-modal-content').innerHTML = modalHTML;
-            document.getElementById('order-confirm-modal').classList.remove('hidden');
-        }
-
-        function closeOrderConfirmModal() {
-            document.getElementById('order-confirm-modal').classList.add('hidden');
-        }
-
-        function sendOrderToWhatsApp() {
             let phone = settings.whatsapp || "201000000000";
-            let url = `https://wa.me/${phone}?text=${encodeURIComponent(currentOrderText)}`;
+            let url = `https://wa.me/${phone}?text=${encodeURIComponent(orderText)}`;
             window.open(url, '_blank');
-            closeOrderConfirmModal();
+        }
+
+        function sendDirectMessage() {
+            let msg = document.getElementById('direct-msg').value.trim();
+            if(!msg) {
+                alert("من فضلك اكتب استفسارك أو رسالتك أولاً!");
+                return;
+            }
+            let fullText = `💬 استفسار عام من متجر Vigor (بخصوص الاستاند/المنتجات):\n\n${msg}`;
+            let phone = settings.whatsapp || "201000000000";
+            let url = `https://wa.me/${phone}?text=${encodeURIComponent(fullText)}`;
+            window.open(url, '_blank');
         }
 
         function openAdminModal() { document.getElementById('admin-modal').classList.remove('hidden'); }
         function closeAdminModal() { document.getElementById('admin-modal').classList.add('hidden'); }
-        function openAdminPanel() { document.getElementById('admin-panel').classList.remove('hidden'); }
+        
+        function openAdminPanel() { 
+            document.getElementById('admin-panel').classList.remove('hidden');
+            document.getElementById('stat-visits').innerText = localStorage.getItem('tapio_vigor_visits') || 0;
+            document.getElementById('stat-orders').innerText = localStorage.getItem('tapio_vigor_orders_count') || 0;
+            renderAdminReviews();
+        }
+
         function closeAdminPanel() { document.getElementById('admin-panel').classList.add('hidden'); }
 
         function checkPin() {
@@ -842,11 +957,13 @@
 
         renderHeader();
         renderBanner();
+        renderReviews();
         renderProducts();
         renderSocialLinks();
     </script>
 </body>
 </html>
+
 
 
 
