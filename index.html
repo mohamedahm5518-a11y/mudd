@@ -14,10 +14,10 @@
 </head>
 <body class="min-h-screen pb-12">
 
-    <!-- الهيدر -->
+    <!-- الهيدر (بدون زر إدارة ظاهر - اضغط 5 مرات على اللوجو لفتح الإدارة) -->
     <header class="bg-slate-900 border-b border-slate-800 p-4 text-center sticky top-0 z-40">
         <div class="max-w-md mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-3">
+            <div onclick="handleLogoClick()" class="flex items-center gap-3 cursor-pointer select-none" title="اضغط 5 مرات لفتح الإدارة">
                 <div id="header-logo-wrapper" class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center font-black text-xl neon-glow text-white overflow-hidden">
                     V
                 </div>
@@ -26,9 +26,6 @@
                     <p class="text-xs text-slate-400">ملابس وتريننجات أصلية 100%</p>
                 </div>
             </div>
-            <button onclick="openAdminModal()" class="text-xs bg-slate-800 hover:bg-slate-700 text-blue-400 border border-blue-500/30 px-3 py-2 rounded-xl transition cursor-pointer">
-                ⚙️ الإدارة
-            </button>
         </div>
     </header>
 
@@ -103,8 +100,8 @@
 
             <p class="text-[11px] text-slate-400 text-center">* برجاء إرسال سكرين شوت التحويل مع الأوردر على الواتساب.</p>
             
-            <button onclick="sendOrder()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-emerald-900/30 flex items-center justify-center gap-2 cursor-pointer mt-2">
-                💬 إرسال الأوردر للواتساب
+            <button onclick="prepareOrderReview()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-emerald-900/30 flex items-center justify-center gap-2 cursor-pointer mt-2">
+                💬 مراجعة وتأكيد الأوردر للواتساب
             </button>
         </div>
 
@@ -113,11 +110,29 @@
 
     </main>
 
+    <!-- نافذة تأكيد الأوردر النهائية -->
+    <div id="order-confirm-modal" class="fixed inset-0 bg-black/80 backdrop-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-sm p-6 rounded-3xl space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                <h3 class="font-bold text-base text-white">📋 فاتورة تأكيد الأوردر</h3>
+                <span id="modal-order-id" class="text-xs text-blue-400 font-mono font-bold"></span>
+            </div>
+            <div id="confirm-modal-content" class="text-xs text-slate-300 space-y-2 bg-slate-950 p-3 rounded-xl border border-slate-800 max-h-60 overflow-y-auto">
+                <!-- تفاصيل الأوردر -->
+            </div>
+            <p class="text-[11px] text-amber-400 text-center">⚠️ بالضغط على تأكيد سيتم توجيهك فوراً لإرسال الطلب رسمياً.</p>
+            <div class="flex gap-2 pt-2">
+                <button type="button" onclick="sendOrderToWhatsApp()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-2.5 rounded-xl font-bold transition cursor-pointer text-xs shadow-lg shadow-emerald-950">تأكيد وإرسال للواتساب 🚀</button>
+                <button type="button" onclick="closeOrderConfirmModal()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2.5 rounded-xl transition cursor-pointer text-xs">تعديل ✕</button>
+            </div>
+        </div>
+    </div>
+
     <!-- نافذة تسجيل دخول الإدارة (PIN Code) -->
     <div id="admin-modal" class="fixed inset-0 bg-black/80 backdrop-sm hidden z-50 flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 w-full max-w-sm p-6 rounded-3xl space-y-4">
             <h3 class="font-bold text-lg text-white">🔐 لوحة تحكم التاجر</h3>
-            <p class="text-xs text-slate-400">أدخل الرقم السري للتحكم في المتجر (الباسورد الافتراضي: 1234):</p>
+            <p class="text-xs text-slate-400">أدخل الرقم السري للتحكم في المتجر:</p>
             <input type="password" id="admin-pin" placeholder="أدخل الرقم السري" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm text-white text-center tracking-widest focus:outline-none focus:border-blue-500">
             <div class="flex gap-2">
                 <button onclick="checkPin()" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-2.5 rounded-xl font-bold transition cursor-pointer">دخول</button>
@@ -142,7 +157,7 @@
                     <input type="checkbox" id="setting-banner-show" class="w-4 h-4 accent-blue-600 cursor-pointer">
                 </div>
                 <div>
-                    <span class="text-xs text-slate-400 block mb-1">عنوان الشارة (Tag) مثلاً (عرض خاص):</span>
+                    <span class="text-xs text-slate-400 block mb-1">عنوان الشارة (Tag):</span>
                     <input type="text" id="setting-banner-tag" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white">
                 </div>
                 <div>
@@ -285,6 +300,20 @@
         let cart = [];
         let selectedSelections = {};
         let activeWalletNum = "";
+        let currentOrderText = "";
+
+        // طريقة فتح لوحة التحكم بالضغط 5 مرات على الشعار
+        let logoClicks = 0;
+        let logoTimer = null;
+        function handleLogoClick() {
+            logoClicks++;
+            if(logoClicks === 5) {
+                logoClicks = 0;
+                openAdminModal();
+            }
+            clearTimeout(logoTimer);
+            logoTimer = setTimeout(() => { logoClicks = 0; }, 2000);
+        }
 
         function renderHeader() {
             let logoWrapper = document.getElementById('header-logo-wrapper');
@@ -522,7 +551,7 @@
             }
         }
 
-        function sendOrder() {
+        function prepareOrderReview() {
             let name = document.getElementById('cust-name').value.trim();
             let address = document.getElementById('cust-address').value.trim();
             let paymentMethod = document.getElementById('payment-method').value;
@@ -537,24 +566,41 @@
                 return;
             }
 
+            let orderId = "#VIGOR-" + Math.floor(1000 + Math.random() * 9000);
             let payText = "الدفع عند الاستلام (كاش)";
             if(paymentMethod === 'instapay') payText = `انستاباي (${settings.instapay})`;
             if(paymentMethod === 'wallet') payText = `محفظة إلكترونية (رقم: ${activeWalletNum || 'لم يتم تحديد الشبكة'})`;
 
-            let orderText = `⚡ أوردر جديد من متجر Vigor:\n\n👤 الاسم: ${name}\n📍 العنوان: ${address}\n💳 طريقة الدفع: ${payText}\n\n📦 المنتجات المطلوبة:\n`;
+            let orderText = `⚡ أوردر جديد من متجر Vigor:\n📌 رقم الطلب: ${orderId}\n\n👤 الاسم: ${name}\n📍 العنوان: ${address}\n💳 طريقة الدفع: ${payText}\n\n📦 المنتجات المطلوبة:\n`;
+            let modalHTML = `<p class="font-bold text-white mb-2">رقم الطلب: <span class="text-blue-400">${orderId}</span></p><p class="text-slate-400 mb-1">الاسم: ${name}</p><p class="text-slate-400 mb-2">العنوان: ${address}</p><div class="border-t border-slate-800 pt-2 space-y-1">`;
+            
             let totalOrderPrice = 0;
 
             cart.forEach((item) => {
                 let itemTotal = item.price * item.qty;
                 totalOrderPrice += itemTotal;
-                orderText += `- ${item.name}\n  المقاس: ${item.size} | اللون: ${item.color} | الكمية: ${item.qty} | الإجمالي: ${itemTotal} ج.م\n\n`;
+                orderText += `- ${item.name} | المقاس: ${item.size} | اللون: ${item.color} | الكمية: ${item.qty} | الإجمالي: ${itemTotal} ج.م\n`;
+                modalHTML += `<p>• ${item.name} (${item.qty}x) - ${item.size} / ${item.color} - <b>${itemTotal} ج.م</b></p>`;
             });
 
-            orderText += `💰 إجمالي الأوردر: ${totalOrderPrice} ج.م`;
+            orderText += `\n💰 إجمالي الأوردر: ${totalOrderPrice} ج.م`;
+            modalHTML += `</div><p class="border-t border-slate-800 pt-2 font-bold text-blue-400 mt-2">الإجمالي الكلي: ${totalOrderPrice} ج.م</p>`;
 
+            currentOrderText = orderText;
+            document.getElementById('modal-order-id').innerText = orderId;
+            document.getElementById('confirm-modal-content').innerHTML = modalHTML;
+            document.getElementById('order-confirm-modal').classList.remove('hidden');
+        }
+
+        function closeOrderConfirmModal() {
+            document.getElementById('order-confirm-modal').classList.add('hidden');
+        }
+
+        function sendOrderToWhatsApp() {
             let phone = settings.whatsapp || "201000000000";
-            let url = `https://wa.me/${phone}?text=${encodeURIComponent(orderText)}`;
+            let url = `https://wa.me/${phone}?text=${encodeURIComponent(currentOrderText)}`;
             window.open(url, '_blank');
+            closeOrderConfirmModal();
         }
 
         function openAdminModal() { document.getElementById('admin-modal').classList.remove('hidden'); }
@@ -801,6 +847,7 @@
     </script>
 </body>
 </html>
+
 
 
 
