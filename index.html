@@ -58,23 +58,44 @@
                 <div class="grid grid-cols-3 gap-2">
                     <button type="button" onclick="setPaymentMethod('cash')" id="pay-btn-cash" class="pay-option-btn text-xs bg-blue-600 text-white font-bold p-2.5 rounded-xl border border-blue-500 transition cursor-pointer">💵 كاش</button>
                     <button type="button" onclick="setPaymentMethod('instapay')" id="pay-btn-instapay" class="pay-option-btn text-xs bg-slate-800 text-slate-300 font-bold p-2.5 rounded-xl border border-slate-700 transition cursor-pointer">📱 انستاباي</button>
-                    <button type="button" onclick="setPaymentMethod('wallet')" id="pay-btn-wallet" class="pay-option-btn text-xs bg-slate-800 text-slate-300 font-bold p-2.5 rounded-xl border border-slate-700 transition cursor-pointer">💳 محفظة</button>
+                    <button type="button" onclick="setPaymentMethod('wallet')" id="pay-btn-wallet" class="pay-option-btn text-xs bg-slate-800 text-slate-300 font-bold p-2.5 rounded-xl border border-slate-700 transition cursor-pointer">💳 محافظ</button>
                 </div>
                 <input type="hidden" id="payment-method" value="cash">
             </div>
 
-            <!-- صندوق التوجيه لرابط الدفع المباشر -->
-            <div id="payment-instructions" class="hidden bg-slate-950 border border-blue-500/30 p-3 rounded-xl text-xs space-y-2 text-slate-300 text-center">
-                <p id="payment-details-text" class="font-semibold text-blue-400"></p>
-                <button type="button" id="pay-link-btn" onclick="openPaymentLink()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-xl transition cursor-pointer flex items-center justify-center gap-2 shadow-lg shadow-blue-900/40">
-                    🔗 اضغط هنا للانتقال لرابط الدفع الفوري
+            <!-- صندوق معلومات ودفع انستاباي -->
+            <div id="payment-instapay-box" class="hidden bg-slate-950 border border-blue-500/30 p-3 rounded-xl text-xs space-y-2 text-slate-300 text-center">
+                <p class="font-semibold text-blue-400">الدفع السريع عبر InstaPay</p>
+                <button type="button" onclick="openInstapayLink()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-xl transition cursor-pointer shadow-lg shadow-blue-900/40">
+                    🔗 اضغط هنا للانتقال لرابط انستاباي
                 </button>
-                <p class="text-[11px] text-slate-400">* برجاء إرسال سكرين شوت التحويل مع الأوردر على الواتساب.</p>
             </div>
+
+            <!-- صندوق اختيار المحافظ لجميع الشبكات -->
+            <div id="payment-wallet-box" class="hidden bg-slate-950 border border-blue-500/30 p-3 rounded-xl text-xs space-y-2 text-slate-300">
+                <p class="font-semibold text-blue-400 text-center">اختر شبكة المحولة منها لتحويل المبلغ:</p>
+                <div class="grid grid-cols-2 gap-2">
+                    <button type="button" onclick="selectWalletNetwork('vodafone')" class="bg-red-900/50 hover:bg-red-900 border border-red-700/50 p-2 rounded-xl text-white font-bold transition cursor-pointer">🔴 فودافون كاش</button>
+                    <button type="button" onclick="selectWalletNetwork('orange')" class="bg-orange-900/50 hover:bg-orange-900 border border-orange-700/50 p-2 rounded-xl text-white font-bold transition cursor-pointer">🟠 أورانج كاش</button>
+                    <button type="button" onclick="selectWalletNetwork('etisalat')" class="bg-emerald-900/50 hover:bg-emerald-900 border border-emerald-700/50 p-2 rounded-xl text-white font-bold transition cursor-pointer">🟢 اتصالات كاش</button>
+                    <button type="button" onclick="selectWalletNetwork('we')" class="bg-purple-900/50 hover:bg-purple-900 border border-purple-700/50 p-2 rounded-xl text-white font-bold transition cursor-pointer">🟣 وي باي</button>
+                </div>
+                <div id="wallet-result-box" class="hidden mt-2 p-2 bg-slate-900 rounded-lg border border-slate-800 text-center space-y-1">
+                    <p id="wallet-number-display" class="font-bold text-amber-400"></p>
+                    <button type="button" onclick="copyWalletNumber()" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-blue-400 px-3 py-1 rounded border border-blue-500/30 cursor-pointer">📋 نسخ رقم المحفظة</button>
+                </div>
+            </div>
+
+            <p class="text-[11px] text-slate-400 text-center">* برجاء إرسال سكرين شوت التحويل مع الأوردر على الواتساب.</p>
             
             <button onclick="sendOrder()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-emerald-900/30 flex items-center justify-center gap-2 cursor-pointer mt-2">
                 💬 إرسال الأوردر للواتساب
             </button>
+        </div>
+
+        <!-- أزرار السوشيال ميديا (تظهر تلقائياً إذا أضافها التاجر) -->
+        <div id="social-links-container" class="flex justify-center gap-4 pt-4">
+            <!-- يتم تعبئتها ديناميكياً -->
         </div>
 
     </main>
@@ -100,18 +121,51 @@
                 <button onclick="closeAdminPanel()" class="bg-slate-800 px-3 py-1.5 rounded-lg text-xs text-white cursor-pointer">إلغاء ✕</button>
             </div>
 
-            <!-- إعدادات روابط الدفع -->
+            <!-- إعدادات الدفع والسوشيال ميديا -->
             <div class="bg-slate-900 border border-slate-800 p-3 rounded-xl space-y-3">
-                <h4 class="font-bold text-white text-sm">💳 إعدادات روابط الدفع:</h4>
+                <h4 class="font-bold text-white text-sm">💳 إعدادات المحافظ وانستاباي:</h4>
                 <div>
                     <span class="text-xs text-slate-400 block mb-1">رابط انستاباي (InstaPay Link):</span>
-                    <input type="text" id="setting-instapay" placeholder="مثال: https://ipn.eg/..." class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white">
+                    <input type="text" id="setting-instapay" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <span class="text-[11px] text-slate-400 block mb-1">فودافون كاش:</span>
+                        <input type="text" id="setting-vodafone" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-white">
+                    </div>
+                    <div>
+                        <span class="text-[11px] text-slate-400 block mb-1">أورانج كاش:</span>
+                        <input type="text" id="setting-orange" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-white">
+                    </div>
+                    <div>
+                        <span class="text-[11px] text-slate-400 block mb-1">اتصالات كاش:</span>
+                        <input type="text" id="setting-etisalat" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-white">
+                    </div>
+                    <div>
+                        <span class="text-[11px] text-slate-400 block mb-1">وي باي (WE):</span>
+                        <input type="text" id="setting-we" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-white">
+                    </div>
+                </div>
+
+                <h4 class="font-bold text-white text-sm pt-2 border-t border-slate-800">🌐 روابط التواصل الاجتماعي والواتساب:</h4>
+                <div>
+                    <span class="text-xs text-slate-400 block mb-1">رقم الواتساب لاستقبال الأوردرات (بالدولي مثل 2010...):</span>
+                    <input type="text" id="setting-whatsapp" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white">
                 </div>
                 <div>
-                    <span class="text-xs text-slate-400 block mb-1">رقم أو رابط المحفظة الإلكترونية:</span>
-                    <input type="text" id="setting-wallet" placeholder="مثال: 01012345678" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white">
+                    <span class="text-xs text-slate-400 block mb-1">رابط صفحة فيسبوك:</span>
+                    <input type="text" id="setting-facebook" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white">
                 </div>
-                <button onclick="savePaymentSettings()" class="w-full bg-blue-600 hover:bg-blue-500 text-white text-xs py-2 rounded-lg font-bold cursor-pointer">حفظ بيانات الدفع 💾</button>
+                <div>
+                    <span class="text-xs text-slate-400 block mb-1">رابط انستجرام:</span>
+                    <input type="text" id="setting-instagram" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white">
+                </div>
+                <div>
+                    <span class="text-xs text-slate-400 block mb-1">رابط تيك توك:</span>
+                    <input type="text" id="setting-tiktok" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white">
+                </div>
+
+                <button onclick="saveSettings()" class="w-full bg-blue-600 hover:bg-blue-500 text-white text-xs py-2 rounded-lg font-bold cursor-pointer mt-2">حفظ كافة الإعدادات 💾</button>
             </div>
 
             <p class="text-xs text-slate-400 pt-2">إدارة المنتجات والأسعار:</p>
@@ -132,8 +186,20 @@
         ];
 
         let products = JSON.parse(localStorage.getItem('tapio_vigor_products')) || defaultProducts;
-        let paymentSettings = JSON.parse(localStorage.getItem('tapio_vigor_pay')) || { instapay: "https://ipn.eg/", wallet: "01000000000" };
+        let settings = JSON.parse(localStorage.getItem('tapio_vigor_settings')) || {
+            instapay: "https://ipn.eg/",
+            vodafone: "01000000000",
+            orange: "01200000000",
+            etisalat: "01100000000",
+            we: "01500000000",
+            whatsapp: "201000000000",
+            facebook: "",
+            instagram: "",
+            tiktok: ""
+        };
+
         let selectedSelections = {};
+        let activeWalletNum = "";
 
         function renderProducts() {
             let container = document.getElementById('products-list');
@@ -177,6 +243,24 @@
             });
         }
 
+        function renderSocialLinks() {
+            let container = document.getElementById('social-links-container');
+            container.innerHTML = '';
+            
+            if(settings.whatsapp) {
+                container.innerHTML += `<a href="https://wa.me/${settings.whatsapp}" target="_blank" class="bg-emerald-600/20 border border-emerald-500/40 text-emerald-400 px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition hover:bg-emerald-600 hover:text-white">💬 واتساب</a>`;
+            }
+            if(settings.facebook) {
+                container.innerHTML += `<a href="${settings.facebook}" target="_blank" class="bg-blue-600/20 border border-blue-500/40 text-blue-400 px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition hover:bg-blue-600 hover:text-white">👥 فيسبوك</a>`;
+            }
+            if(settings.instagram) {
+                container.innerHTML += `<a href="${settings.instagram}" target="_blank" class="bg-pink-600/20 border border-pink-500/40 text-pink-400 px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition hover:bg-pink-600 hover:text-white">📸 انستجرام</a>`;
+            }
+            if(settings.tiktok) {
+                container.innerHTML += `<a href="${settings.tiktok}" target="_blank" class="bg-slate-800 border border-slate-700 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition hover:bg-slate-700">🎵 تيك توك</a>`;
+            }
+        }
+
         function selectSize(pIndex, size) {
             document.querySelectorAll(`.size-btn-${pIndex}`).forEach(b => b.classList.remove('bg-blue-600', 'text-white', 'border-blue-500'));
             let target = document.getElementById(`size-${pIndex}-${size}`);
@@ -214,50 +298,43 @@
                 activeBtn.className = "pay-option-btn text-xs bg-blue-600 text-white font-bold p-2.5 rounded-xl border border-blue-500 transition cursor-pointer shadow-lg shadow-blue-900/30";
             }
 
-            togglePaymentInfo();
-        }
+            let instapayBox = document.getElementById('payment-instapay-box');
+            let walletBox = document.getElementById('payment-wallet-box');
 
-        function togglePaymentInfo() {
-            let method = document.getElementById('payment-method').value;
-            let infoBox = document.getElementById('payment-instructions');
-            let detailsText = document.getElementById('payment-details-text');
-            let payBtn = document.getElementById('pay-link-btn');
+            instapayBox.classList.add('hidden');
+            walletBox.classList.add('hidden');
 
-            if(method === 'cash') {
-                infoBox.classList.add('hidden');
-            } else if(method === 'instapay') {
-                infoBox.classList.remove('hidden');
-                detailsText.innerText = "الدفع السريع عبر InstaPay:";
-                payBtn.innerHTML = "🔗 اضغط هنا للدفع فوراً عبر InstaPay";
-            } else if(method === 'wallet') {
-                infoBox.classList.remove('hidden');
-                detailsText.innerText = `رقم المحفظة: ${paymentSettings.wallet}`;
-                payBtn.innerHTML = "🔗 اضغط هنا للتحويل للمحفظة";
-            }
-        }
-
-        // فتح رابط الدفع المباشر في تاب جديد
-        function openPaymentLink() {
-            let method = document.getElementById('payment-method').value;
-            let link = "";
-            
             if(method === 'instapay') {
-                link = paymentSettings.instapay;
-                if(!link.startsWith('http')) link = 'https://' + link;
+                instapayBox.classList.remove('hidden');
             } else if(method === 'wallet') {
-                // إذا كان رقم محفظة يمكن الاتصال به أو تحويله، أو رابط
-                link = paymentSettings.wallet;
-                if(link.startsWith('01')) {
-                    // إذا كان رقم فودافون كاش مثلاً، يمكن فتح دايلر الاتصال أو إظهار الرقم
-                    window.location.href = `tel:*9*${link}*`;
-                    return;
-                } else if(!link.startsWith('http')) {
-                    link = 'https://' + link;
-                }
+                walletBox.classList.remove('hidden');
             }
+        }
 
-            if(link) {
-                window.open(link, '_blank');
+        function openInstapayLink() {
+            let link = settings.instapay;
+            if(!link.startsWith('http')) link = 'https://' + link;
+            window.open(link, '_blank');
+        }
+
+        function selectWalletNetwork(net) {
+            let resultBox = document.getElementById('wallet-result-box');
+            let display = document.getElementById('wallet-number-display');
+            resultBox.classList.remove('hidden');
+
+            if(net === 'vodafone') activeWalletNum = settings.vodafone;
+            if(net === 'orange') activeWalletNum = settings.orange;
+            if(net === 'etisalat') activeWalletNum = settings.etisalat;
+            if(net === 'we') activeWalletNum = settings.we;
+
+            display.innerText = `رقم محفظة (${net.toUpperCase()}): ${activeWalletNum}`;
+        }
+
+        function copyWalletNumber() {
+            if(activeWalletNum) {
+                navigator.clipboard.writeText(activeWalletNum).then(() => {
+                    alert("تم نسخ رقم المحفظة بنجاح! 📋✨");
+                });
             }
         }
 
@@ -272,8 +349,8 @@
             }
 
             let payText = "الدفع عند الاستلام (كاش)";
-            if(paymentMethod === 'instapay') payText = `انستاباي (${paymentSettings.instapay})`;
-            if(paymentMethod === 'wallet') payText = `محفظة إلكترونية (${paymentSettings.wallet})`;
+            if(paymentMethod === 'instapay') payText = `انستاباي (${settings.instapay})`;
+            if(paymentMethod === 'wallet') payText = `محفظة إلكترونية (رقم: ${activeWalletNum || 'لم يتم تحديد الشبكة'})`;
 
             let orderText = `⚡ أوردر جديد من متجر Vigor:\n\n👤 الاسم: ${name}\n📍 العنوان: ${address}\n💳 طريقة الدفع: ${payText}\n\n📦 المنتجات المطلوبة:\n`;
             let hasItems = false;
@@ -295,7 +372,7 @@
                 return;
             }
 
-            let phone = "201000000000"; // رقم واتساب صاحب المتجر
+            let phone = settings.whatsapp || "201000000000";
             let url = `https://wa.me/${phone}?text=${encodeURIComponent(orderText)}`;
             window.open(url, '_blank');
         }
@@ -311,23 +388,39 @@
                 closeAdminModal();
                 document.getElementById('admin-pin').value = "";
                 openAdminPanel();
-                loadPaymentSettingsInput();
+                loadSettingsInput();
                 renderAdminProducts();
             } else {
                 alert("الرقم السري غير صحيح! (جرب 1234)");
             }
         }
 
-        function loadPaymentSettingsInput() {
-            document.getElementById('setting-instapay').value = paymentSettings.instapay;
-            document.getElementById('setting-wallet').value = paymentSettings.wallet;
+        function loadSettingsInput() {
+            document.getElementById('setting-instapay').value = settings.instapay || '';
+            document.getElementById('setting-vodafone').value = settings.vodafone || '';
+            document.getElementById('setting-orange').value = settings.orange || '';
+            document.getElementById('setting-etisalat').value = settings.etisalat || '';
+            document.getElementById('setting-we').value = settings.we || '';
+            document.getElementById('setting-whatsapp').value = settings.whatsapp || '';
+            document.getElementById('setting-facebook').value = settings.facebook || '';
+            document.getElementById('setting-instagram').value = settings.instagram || '';
+            document.getElementById('setting-tiktok').value = settings.tiktok || '';
         }
 
-        function savePaymentSettings() {
-            paymentSettings.instapay = document.getElementById('setting-instapay').value;
-            paymentSettings.wallet = document.getElementById('setting-wallet').value;
-            localStorage.setItem('tapio_vigor_pay', JSON.stringify(paymentSettings));
-            alert("تم حفظ بيانات الدفع بنجاح! 💳✨");
+        function saveSettings() {
+            settings.instapay = document.getElementById('setting-instapay').value;
+            settings.vodafone = document.getElementById('setting-vodafone').value;
+            settings.orange = document.getElementById('setting-orange').value;
+            settings.etisalat = document.getElementById('setting-etisalat').value;
+            settings.we = document.getElementById('setting-we').value;
+            settings.whatsapp = document.getElementById('setting-whatsapp').value;
+            settings.facebook = document.getElementById('setting-facebook').value;
+            settings.instagram = document.getElementById('setting-instagram').value;
+            settings.tiktok = document.getElementById('setting-tiktok').value;
+
+            localStorage.setItem('tapio_vigor_settings', JSON.stringify(settings));
+            renderSocialLinks();
+            alert("تم حفظ كافة الإعدادات بنجاح! 🚀✨");
         }
 
         function renderAdminProducts() {
@@ -409,7 +502,9 @@
         }
 
         renderProducts();
+        renderSocialLinks();
     </script>
 </body>
 </html>
+
 
