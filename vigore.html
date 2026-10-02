@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vigor | ملابس رياضية أصلية</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Cairo', sans-serif; background-color: #0b0f19; color: #f3f4f6; }
+        .neon-glow { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+        .neon-border { border: 1px solid rgba(59, 130, 246, 0.4); }
+    </style>
+</head>
+<body class="min-h-screen pb-12">
+
+    <!-- الهيدر -->
+    <header class="bg-slate-900 border-b border-slate-800 p-4 text-center sticky top-0 z-40">
+        <div class="max-w-md mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center font-black text-xl neon-glow text-white">V</div>
+                <div class="text-right">
+                    <h1 class="font-bold text-lg text-white">Vigor ⚡</h1>
+                    <p class="text-xs text-slate-400">ملابس وتريننجات أصلية 100%</p>
+                </div>
+            </div>
+            <button onclick="openAdminModal()" class="text-xs bg-slate-800 hover:bg-slate-700 text-blue-400 border border-blue-500/30 px-3 py-2 rounded-xl transition">
+                ⚙️ الإدارة
+            </button>
+        </div>
+    </header>
+
+    <!-- المحتوى الرئيسي -->
+    <main class="max-w-md mx-auto p-4 space-y-4">
+        
+        <!-- بانر ترويجي -->
+        <div class="bg-gradient-to-r from-blue-900 to-slate-900 p-4 rounded-2xl neon-border text-center">
+            <span class="bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded-full uppercase">عرض خاص</span>
+            <h2 class="font-bold text-lg mt-2 text-white">🔥 أقوى طقم جيم شتوي</h2>
+            <p class="text-xs text-slate-300 mt-1">اطلب الطقم الكامل (هودي + بنطلون) وخد الشحن مجاناً!</p>
+        </div>
+
+        <h3 class="font-bold text-sm text-slate-400 mt-6 mb-2">🛒 اختر منتجاتك:</h3>
+
+        <!-- قائمة المنتجات -->
+        <div id="products-list" class="space-y-4">
+            <!-- سيتم تعبئة المنتجات تلقائياً عبر الكود -->
+        </div>
+
+        <!-- زر إرسال الطلب للواتساب -->
+        <div class="mt-6 bg-slate-900 p-4 rounded-2xl neon-border space-y-3">
+            <h4 class="font-bold text-sm text-white">بيانات التوصيل:</h4>
+            <input type="text" id="cust-name" placeholder="اسمك الكريم..." class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-blue-500">
+            <input type="text" id="cust-address" placeholder="العنوان بالتفصيل (المحافظة والمنطقة)..." class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-blue-500">
+            
+            <button onclick="sendOrder()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-emerald-900/30 flex items-center justify-center gap-2">
+                💬 إرسال الأوردر للواتساب
+            </button>
+        </div>
+
+    </main>
+
+    <!-- نافذة تسجيل دخول الإدارة (PIN Code) -->
+    <div id="admin-modal" class="fixed inset-0 bg-black/80 backdrop-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-sm p-6 rounded-3xl space-y-4">
+            <h3 class="font-bold text-lg text-white">🔐 لوحة تحكم التاجر</h3>
+            <p class="text-xs text-slate-400">أدخل رقم السري (PIN) للتحكم في الأسعار والمخزون:</p>
+            <input type="password" id="admin-pin" placeholder="أدخل الرقم السري (1234)" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm text-white text-center tracking-widest focus:outline-none focus:border-blue-500">
+            <div class="flex gap-2">
+                <button onclick="checkPin()" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-2.5 rounded-xl font-bold transition">دخول</button>
+                <button onclick="closeAdminModal()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2.5 rounded-xl transition">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- لوحة تحكم صاحب المحل -->
+    <div id="admin-panel" class="fixed inset-0 bg-slate-950 hidden z-50 overflow-y-auto p-4">
+        <div class="max-w-md mx-auto space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h3 class="font-bold text-lg text-blue-400">⚙️ لوحة تعديل Vigor</h3>
+                <button onclick="closeAdminPanel()" class="bg-slate-800 px-3 py-1.5 rounded-lg text-xs text-white">إغلاق ✕</button>
+            </div>
+            <p class="text-xs text-slate-400">يمكنك تعديل الأسعار أو إيقاف المنتجات الفورية:</p>
+            <div id="admin-products-list" class="space-y-3"></div>
+        </div>
+    </div>
+
+    <!-- الفوتر -->
+    <footer class="text-center text-xs text-slate-500 mt-10">
+        Powered by <span class="text-blue-400 font-bold">Tapio</span> 🚀
+    </footer>
+
+    <script>
+        let defaultProducts = [
+            { id: 1, name: "تريننج شتوي رياضي (Vigor)", price: 650, available: true, sizes: ["M", "L", "XL", "XXL"], colors: ["أسود", "كحلي", "رمادي"] },
+            { id: 2, name: "تيشيرت جيم Dri-Fit", price: 250, available: true, sizes: ["S", "M", "L", "XL"], colors: ["أبيض", "أسود", "أزرق نيون"] },
+            { id: 3, name: "شورت رياضي بجيوب بسحاب", price: 200, available: true, sizes: ["M", "L", "XL"], colors: ["أسود", "رمادي غامق"] }
+        ];
+
+        let products = JSON.parse(localStorage.getItem('tapio_vigor_products')) || defaultProducts;
+
+        function renderProducts() {
+            let container = document.getElementById('products-list');
+            container.innerHTML = '';
+            
+            products.forEach((p, index) => {
+                if(!p.available) return;
+                
+                let sizesHTML = p.sizes.map(s => `<button onclick="selectSize(${index}, '${s}')" id="size-${index}-${s}" class="size-btn-${index} text-xs border border-slate-700 px-3 py-1.5 rounded-lg text-slate-300 transition hover:border-blue-500">${s}</button>`).join('');
+                let colorsHTML = p.colors.map(c => `<button onclick="selectColor(${index}, '${c}')" id="color-${index}-${c}" class="color-btn-${index} text-xs border border-slate-700 px-3 py-1.5 rounded-lg text-slate-300 transition hover:border-blue-500">${c}</button>`).join('');
+
+                container.innerHTML += `
+                    <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-3">
+                        <div class="flex justify-between items-start">
+                            <h4 class="font-bold text-white text-base">${p.name}</h4>
+                            <span class="text-blue-400 font-bold text-sm">${p.price} ج.م</span>
+                        </div>
+                        
+                        <div>
+                            <span class="text-[11px] text-slate-400 block mb-1">اختر المقاس:</span>
+                            <div class="flex gap-2 flex-wrap">${sizesHTML}</div>
+                        </div>
+
+                        <div>
+                            <span class="text-[11px] text-slate-400 block mb-1">اختر اللون:</span>
+                            <div class="flex gap-2 flex-wrap">${colorsHTML}</div>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-2 border-t border-slate-800/60">
+                            <span class="text-xs text-slate-400">الكمية:</span>
+                            <div class="flex items-center gap-3 bg-slate-800 px-3 py-1 rounded-xl">
+                                <button onclick="changeQty(${index}, -1)" class="text-blue-400 font-bold text-lg">-</button>
+                                <span id="qty-${index}" class="font-bold text-white text-sm">1</span>
+                                <button onclick="changeQty(${index}, 1)" class="text-blue-400 font-bold text-lg">+</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        let selectedSelections = {};
+
+        function selectSize(pIndex, size) {
+            document.querySelectorAll(`.size-btn-${pIndex}`).forEach(b => b.classList.remove('bg-blue-600', 'text-white', 'border-blue-500'));
+            document.getElementById(`size-${pIndex}-${size}`).classList.add('bg-blue-600', 'text-white', 'border-blue-500');
+            if(!selectedSelections[pIndex]) selectedSelections[pIndex] = {};
+            selectedSelections[pIndex].size = size;
+        }
+
+        function selectColor(pIndex, color) {
+            document.querySelectorAll(`.color-btn-${pIndex}`).forEach(b => b.classList.remove('bg-blue-600', 'text-white', 'border-blue-500'));
+            document.getElementById(`color-${pIndex}-${color}`).classList.add('bg-blue-600', 'text-white', 'border-blue-500');
+            if(!selectedSelections[pIndex]) selectedSelections[pIndex] = {};
+            selectedSelections[pIndex].color = color;
+        }
+
+        function changeQty(index, delta) {
+            let qtyEl = document.getElementById(`qty-${index}`);
+            let current = parseInt(qtyEl.innerText) + delta;
+            if(current < 1) current = 1;
+            qtyEl.innerText = current;
+        }
+
+        function sendOrder() {
+            let name = document.getElementById('cust-name').value.trim();
+            let address = document.getElementById('cust-address').value.trim();
+
+            if(!name || !address) {
+                alert("من فضلك اكتب اسمك وعنوانك بالكامل!");
+                return;
+            }
+
+            let orderText = `⚡ أوردر جديد من متجر Vigor:\n\n👤 الاسم: ${name}\n📍 العنوان: ${address}\n\n📦 المنتجات المطلوبة:\n`;
+            let hasItems = false;
+
+            products.forEach((p, index) => {
+                let qtyEl = document.getElementById(`qty-${index}`);
+                if(qtyEl) {
+                    let qty = parseInt(qtyEl.innerText);
+                    let sel = selectedSelections[index] || {};
+                    if(qty > 0 && sel.size && sel.color) {
+                        hasItems = true;
+                        orderText += `- ${p.name}\n  المقاس: ${sel.size} | اللون: ${sel.color} | الكمية: ${qty} | الإجمالي: ${p.price * qty} ج.م\n\n`;
+                    }
+                }
+            });
+
+            if(!hasItems) {
+                alert("من فضلك اختر مقاس ولون منتج واحد على الأقل قبل الإرسال!");
+                return;
+            }
+
+            let phone = "201000000000"; // رقم واتساب صاحب المتجر
+            let url = `https://wa.me/${phone}?text=${encodeURIComponent(orderText)}`;
+            window.open(url, '_blank');
+        }
+
+        function openAdminModal() { document.getElementById('admin-modal').classList.remove('hidden'); }
+        function closeAdminModal() { document.getElementById('admin-modal').classList.add('hidden'); }
+        function closeAdminPanel() { document.getElementById('admin-panel').classList.add('hidden'); }
+
+        function checkPin() {
+            let pin = document.getElementById('admin-pin').value;
+            if(pin === "1234") {
+                closeAdminModal();
+                document.getElementById('admin-pin').value = "";
+                openAdminPanel();
+                renderAdminProducts();
+            } else {
+                alert("الرقم السري غير صحيح!");
+            }
+        }
+
+        function renderAdminProducts() {
+            let container = document.getElementById('admin-products-list');
+            container.innerHTML = '';
+            products.forEach((p, index) => {
+                container.innerHTML += `
+                    <div class="bg-slate-900 border border-slate-800 p-3 rounded-xl space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-white text-sm">${p.name}</span>
+                            <button onclick="toggleAvailability(${index})" class="text-xs px-2.5 py-1 rounded-lg ${p.available ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'}">
+                                ${p.available ? 'متاح للبيع 🟢' : 'خلصان 🔴'}
+                            </button>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs text-slate-400">السعر (ج.م):</span>
+                            <input type="number" id="price-input-${index}" value="${p.price}" class="bg-slate-800 border border-slate-700 rounded-lg px-2 py-1 text-sm text-white w-28">
+                            <button onclick="updatePrice(${index})" class="bg-blue-600 hover:bg-blue-500 text-white text-xs px-3 py-1.5 rounded-lg">حفظ</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function updatePrice(index) {
+            let newPrice = parseFloat(document.getElementById(`price-input-${index}`).value);
+            if(!isNaN(newPrice)) {
+                products[index].price = newPrice;
+                localStorage.setItem('tapio_vigor_products', JSON.stringify(products));
+                renderProducts();
+                alert("تم تحديث السعر بنجاح! 🚀");
+            }
+        }
+
+        function toggleAvailability(index) {
+            products[index].available = !products[index].available;
+            localStorage.setItem('tapio_vigor_products', JSON.stringify(products));
+            renderProducts();
+            renderAdminProducts();
+        }
+
+        renderProducts();
+    </script>
+</body>
+</html>
