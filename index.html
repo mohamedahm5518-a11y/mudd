@@ -52,19 +52,23 @@
             <input type="text" id="cust-name" placeholder="اسمك الكريم..." class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-blue-500">
             <input type="text" id="cust-address" placeholder="العنوان بالتفصيل (المحافظة والمنطقة)..." class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-blue-500">
             
-            <!-- اختيار طريقة الدفع -->
-            <div class="space-y-1.5 pt-1">
+            <!-- أزرار اختيار طريقة الدفع -->
+            <div class="space-y-2 pt-1">
                 <label class="text-xs text-slate-400 block">اختر طريقة الدفع:</label>
-                <select id="payment-method" onchange="togglePaymentInfo()" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-blue-500 cursor-pointer">
-                    <option value="cash">💵 الدفع عند الاستلام (كاش)</option>
-                    <option value="instapay">InstaPay / تحويل لحظي 📱</option>
-                    <option value="wallet">موبايل كاش (فودافون/اتصالات/أورانج) 💳</option>
-                </select>
+                <div class="grid grid-cols-3 gap-2">
+                    <button type="button" onclick="setPaymentMethod('cash')" id="pay-btn-cash" class="pay-option-btn text-xs bg-blue-600 text-white font-bold p-2.5 rounded-xl border border-blue-500 transition cursor-pointer">💵 كاش</button>
+                    <button type="button" onclick="setPaymentMethod('instapay')" id="pay-btn-instapay" class="pay-option-btn text-xs bg-slate-800 text-slate-300 font-bold p-2.5 rounded-xl border border-slate-700 transition cursor-pointer">📱 انستاباي</button>
+                    <button type="button" onclick="setPaymentMethod('wallet')" id="pay-btn-wallet" class="pay-option-btn text-xs bg-slate-800 text-slate-300 font-bold p-2.5 rounded-xl border border-slate-700 transition cursor-pointer">💳 محفظة</button>
+                </div>
+                <input type="hidden" id="payment-method" value="cash">
             </div>
 
-            <!-- صندوق معلومات الدفع الإلكتروني (يظهر ديناميكياً) -->
-            <div id="payment-instructions" class="hidden bg-slate-950 border border-blue-500/30 p-3 rounded-xl text-xs space-y-1 text-slate-300">
+            <!-- صندوق التوجيه لرابط الدفع المباشر -->
+            <div id="payment-instructions" class="hidden bg-slate-950 border border-blue-500/30 p-3 rounded-xl text-xs space-y-2 text-slate-300 text-center">
                 <p id="payment-details-text" class="font-semibold text-blue-400"></p>
+                <button type="button" id="pay-link-btn" onclick="openPaymentLink()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-xl transition cursor-pointer flex items-center justify-center gap-2 shadow-lg shadow-blue-900/40">
+                    🔗 اضغط هنا للانتقال لرابط الدفع الفوري
+                </button>
                 <p class="text-[11px] text-slate-400">* برجاء إرسال سكرين شوت التحويل مع الأوردر على الواتساب.</p>
             </div>
             
@@ -96,15 +100,15 @@
                 <button onclick="closeAdminPanel()" class="bg-slate-800 px-3 py-1.5 rounded-lg text-xs text-white cursor-pointer">إلغاء ✕</button>
             </div>
 
-            <!-- قسم إعدادات الدفع -->
+            <!-- إعدادات روابط الدفع -->
             <div class="bg-slate-900 border border-slate-800 p-3 rounded-xl space-y-3">
-                <h4 class="font-bold text-white text-sm">💳 إعدادات حسابات الدفع:</h4>
+                <h4 class="font-bold text-white text-sm">💳 إعدادات روابط الدفع:</h4>
                 <div>
-                    <span class="text-xs text-slate-400 block mb-1">حساب InstaPay (Username):</span>
-                    <input type="text" id="setting-instapay" placeholder="مثال: username@instapay" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white">
+                    <span class="text-xs text-slate-400 block mb-1">رابط انستاباي (InstaPay Link):</span>
+                    <input type="text" id="setting-instapay" placeholder="مثال: https://ipn.eg/..." class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white">
                 </div>
                 <div>
-                    <span class="text-xs text-slate-400 block mb-1">رقم المحفظة الإلكترونية:</span>
+                    <span class="text-xs text-slate-400 block mb-1">رقم أو رابط المحفظة الإلكترونية:</span>
                     <input type="text" id="setting-wallet" placeholder="مثال: 01012345678" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white">
                 </div>
                 <button onclick="savePaymentSettings()" class="w-full bg-blue-600 hover:bg-blue-500 text-white text-xs py-2 rounded-lg font-bold cursor-pointer">حفظ بيانات الدفع 💾</button>
@@ -128,7 +132,7 @@
         ];
 
         let products = JSON.parse(localStorage.getItem('tapio_vigor_products')) || defaultProducts;
-        let paymentSettings = JSON.parse(localStorage.getItem('tapio_vigor_pay')) || { instapay: "vigor@instapay", wallet: "01000000000" };
+        let paymentSettings = JSON.parse(localStorage.getItem('tapio_vigor_pay')) || { instapay: "https://ipn.eg/", wallet: "01000000000" };
         let selectedSelections = {};
 
         function renderProducts() {
@@ -138,8 +142,8 @@
             products.forEach((p, index) => {
                 if(!p.available) return;
                 
-                let sizesHTML = p.sizes.map(s => `<button onclick="selectSize(${index}, '${s}')" id="size-${index}-${s}" class="size-btn-${index} text-xs border border-slate-700 px-3 py-1.5 rounded-lg text-slate-300 transition hover:border-blue-500 cursor-pointer">${s}</button>`).join('');
-                let colorsHTML = p.colors.map(c => `<button onclick="selectColor(${index}, '${c}')" id="color-${index}-${c}" class="color-btn-${index} text-xs border border-slate-700 px-3 py-1.5 rounded-lg text-slate-300 transition hover:border-blue-500 cursor-pointer">${c}</button>`).join('');
+                let sizesHTML = p.sizes.map(s => `<button type="button" onclick="selectSize(${index}, '${s}')" id="size-${index}-${s}" class="size-btn-${index} text-xs border border-slate-700 px-3 py-1.5 rounded-lg text-slate-300 transition hover:border-blue-500 cursor-pointer">${s}</button>`).join('');
+                let colorsHTML = p.colors.map(c => `<button type="button" onclick="selectColor(${index}, '${c}')" id="color-${index}-${c}" class="color-btn-${index} text-xs border border-slate-700 px-3 py-1.5 rounded-lg text-slate-300 transition hover:border-blue-500 cursor-pointer">${c}</button>`).join('');
                 let imageHTML = p.image ? `<img src="${p.image}" alt="${p.name}" class="w-full h-48 object-cover rounded-xl mb-3 border border-slate-800">` : '';
 
                 container.innerHTML += `
@@ -163,9 +167,9 @@
                         <div class="flex items-center justify-between pt-2 border-t border-slate-800/60">
                             <span class="text-xs text-slate-400">الكمية:</span>
                             <div class="flex items-center gap-3 bg-slate-800 px-3 py-1 rounded-xl">
-                                <button onclick="changeQty(${index}, -1)" class="text-blue-400 font-bold text-lg px-2 cursor-pointer">-</button>
+                                <button type="button" onclick="changeQty(${index}, -1)" class="text-blue-400 font-bold text-lg px-2 cursor-pointer">-</button>
                                 <span id="qty-${index}" class="font-bold text-white text-sm">1</span>
-                                <button onclick="changeQty(${index}, 1)" class="text-blue-400 font-bold text-lg px-2 cursor-pointer">+</button>
+                                <button type="button" onclick="changeQty(${index}, 1)" class="text-blue-400 font-bold text-lg px-2 cursor-pointer">+</button>
                             </div>
                         </div>
                     </div>
@@ -198,19 +202,62 @@
             }
         }
 
+        function setPaymentMethod(method) {
+            document.getElementById('payment-method').value = method;
+            
+            document.querySelectorAll('.pay-option-btn').forEach(btn => {
+                btn.className = "pay-option-btn text-xs bg-slate-800 text-slate-300 font-bold p-2.5 rounded-xl border border-slate-700 transition cursor-pointer";
+            });
+
+            let activeBtn = document.getElementById(`pay-btn-${method}`);
+            if(activeBtn) {
+                activeBtn.className = "pay-option-btn text-xs bg-blue-600 text-white font-bold p-2.5 rounded-xl border border-blue-500 transition cursor-pointer shadow-lg shadow-blue-900/30";
+            }
+
+            togglePaymentInfo();
+        }
+
         function togglePaymentInfo() {
             let method = document.getElementById('payment-method').value;
             let infoBox = document.getElementById('payment-instructions');
             let detailsText = document.getElementById('payment-details-text');
+            let payBtn = document.getElementById('pay-link-btn');
 
             if(method === 'cash') {
                 infoBox.classList.add('hidden');
             } else if(method === 'instapay') {
                 infoBox.classList.remove('hidden');
-                detailsText.innerText = `حساب انستاباي للتحويل: ${paymentSettings.instapay}`;
+                detailsText.innerText = "الدفع السريع عبر InstaPay:";
+                payBtn.innerHTML = "🔗 اضغط هنا للدفع فوراً عبر InstaPay";
             } else if(method === 'wallet') {
                 infoBox.classList.remove('hidden');
-                detailsText.innerText = `رقم المحفظة الإلكترونية للتحويل: ${paymentSettings.wallet}`;
+                detailsText.innerText = `رقم المحفظة: ${paymentSettings.wallet}`;
+                payBtn.innerHTML = "🔗 اضغط هنا للتحويل للمحفظة";
+            }
+        }
+
+        // فتح رابط الدفع المباشر في تاب جديد
+        function openPaymentLink() {
+            let method = document.getElementById('payment-method').value;
+            let link = "";
+            
+            if(method === 'instapay') {
+                link = paymentSettings.instapay;
+                if(!link.startsWith('http')) link = 'https://' + link;
+            } else if(method === 'wallet') {
+                // إذا كان رقم محفظة يمكن الاتصال به أو تحويله، أو رابط
+                link = paymentSettings.wallet;
+                if(link.startsWith('01')) {
+                    // إذا كان رقم فودافون كاش مثلاً، يمكن فتح دايلر الاتصال أو إظهار الرقم
+                    window.location.href = `tel:*9*${link}*`;
+                    return;
+                } else if(!link.startsWith('http')) {
+                    link = 'https://' + link;
+                }
+            }
+
+            if(link) {
+                window.open(link, '_blank');
             }
         }
 
@@ -291,7 +338,7 @@
                     <div class="bg-slate-900 border border-slate-800 p-3 rounded-xl space-y-3">
                         <div class="flex justify-between items-center">
                             <span class="font-bold text-white text-sm">${p.name}</span>
-                            <button onclick="toggleAvailability(${index})" class="text-xs px-2.5 py-1 rounded-lg cursor-pointer ${p.available ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'}">
+                            <button type="button" onclick="toggleAvailability(${index})" class="text-xs px-2.5 py-1 rounded-lg cursor-pointer ${p.available ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'}">
                                 ${p.available ? 'متاح للبيع 🟢' : 'خلصان 🔴'}
                             </button>
                         </div>
@@ -299,11 +346,11 @@
                         <div class="flex items-center gap-2">
                             <span class="text-xs text-slate-400">السعر:</span>
                             <input type="number" id="price-input-${index}" value="${p.price}" class="bg-slate-800 border border-slate-700 rounded-lg px-2 py-1 text-sm text-white w-28">
-                            <button onclick="updatePrice(${index})" class="bg-blue-600 hover:bg-blue-500 text-white text-xs px-3 py-1.5 rounded-lg cursor-pointer">حفظ السعر</button>
+                            <button type="button" onclick="updatePrice(${index})" class="bg-blue-600 hover:bg-blue-500 text-white text-xs px-3 py-1.5 rounded-lg cursor-pointer">حفظ السعر</button>
                         </div>
 
                         <div class="space-y-1 pt-2 border-t border-slate-800">
-                            <span class="text-xs text-slate-400 block">تغيير صورة المنتج:</span>
+                            <span class="text-xs text-slate-400 block">تغيير صورة المنتج (ضغط تلقائي):</span>
                             <input type="file" accept="image/*" onchange="updateProductImage(${index}, event)" class="w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-blue-400 hover:file:bg-slate-700 cursor-pointer">
                         </div>
                     </div>
@@ -326,11 +373,29 @@
             if (file) {
                 let reader = new FileReader();
                 reader.onload = function(e) {
-                    products[index].image = e.target.result;
-                    localStorage.setItem('tapio_vigor_products', JSON.stringify(products));
-                    renderProducts();
-                    renderAdminProducts();
-                    alert("تم تحديث صورة المنتج بنجاح! 📸✨");
+                    let img = new Image();
+                    img.onload = function() {
+                        let canvas = document.createElement('canvas');
+                        let maxWidth = 500;
+                        let scale = maxWidth / img.width;
+                        canvas.width = maxWidth;
+                        canvas.height = img.height * scale;
+                        
+                        let ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        
+                        let compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                        products[index].image = compressedDataUrl;
+                        try {
+                            localStorage.setItem('tapio_vigor_products', JSON.stringify(products));
+                            renderProducts();
+                            renderAdminProducts();
+                            alert("تم ضغط وتحديث صورة المنتج بنجاح! 📸✨");
+                        } catch (err) {
+                            alert("عذراً، مساحة التخزين ممتلئة. حاول اختيار صورة بحجم أصغر.");
+                        }
+                    };
+                    img.src = e.target.result;
                 };
                 reader.readAsDataURL(file);
             }
@@ -348,22 +413,3 @@
 </body>
 </html>
 
-                    renderProducts();
-                    renderAdminProducts();
-                    alert("تم تحديث صورة المنتج بنجاح! 📸✨");
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function toggleAvailability(index) {
-            products[index].available = !products[index].available;
-            localStorage.setItem('tapio_vigor_products', JSON.stringify(products));
-            renderProducts();
-            renderAdminProducts();
-        }
-
-        renderProducts();
-    </script>
-</body>
-</html>
