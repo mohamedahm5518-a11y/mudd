@@ -255,6 +255,7 @@
 
         function openAdminModal() { document.getElementById('admin-modal').classList.remove('hidden'); }
         function closeAdminModal() { document.getElementById('admin-modal').classList.add('hidden'); }
+        function openAdminPanel() { document.getElementById('admin-panel').classList.remove('hidden'); }
         function closeAdminPanel() { document.getElementById('admin-panel').classList.add('hidden'); }
 
         function checkPin() {
@@ -327,6 +328,26 @@
                 reader.onload = function(e) {
                     products[index].image = e.target.result;
                     localStorage.setItem('tapio_vigor_products', JSON.stringify(products));
+                    renderProducts();
+                    renderAdminProducts();
+                    alert("تم تحديث صورة المنتج بنجاح! 📸✨");
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function toggleAvailability(index) {
+            products[index].available = !products[index].available;
+            localStorage.setItem('tapio_vigor_products', JSON.stringify(products));
+            renderProducts();
+            renderAdminProducts();
+        }
+
+        renderProducts();
+    </script>
+</body>
+</html>
+
                     renderProducts();
                     renderAdminProducts();
                     alert("تم تحديث صورة المنتج بنجاح! 📸✨");
