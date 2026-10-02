@@ -18,7 +18,9 @@
     <header class="bg-slate-900 border-b border-slate-800 p-4 text-center sticky top-0 z-40">
         <div class="max-w-md mx-auto flex justify-between items-center">
             <div class="flex items-center gap-3">
-                <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center font-black text-xl neon-glow text-white">V</div>
+                <div id="header-logo-wrapper" class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center font-black text-xl neon-glow text-white overflow-hidden">
+                    V
+                </div>
                 <div class="text-right">
                     <h1 class="font-bold text-lg text-white">Vigor ⚡</h1>
                     <p class="text-xs text-slate-400">ملابس وتريننجات أصلية 100%</p>
@@ -45,8 +47,25 @@
         <!-- قائمة المنتجات -->
         <div id="products-list" class="space-y-4"></div>
 
+        <!-- سلة المشتريات -->
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-3 mt-6">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                <h4 class="font-bold text-sm text-white flex items-center gap-1.5">🛒 سلة المشتريات الخاصة بك</h4>
+                <span id="cart-count" class="bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full font-bold">0</span>
+            </div>
+            
+            <div id="cart-items" class="space-y-2 text-xs text-slate-300">
+                <p class="text-center text-slate-500 py-3">السلة فارغة حالياً..</p>
+            </div>
+
+            <div class="flex justify-between items-center pt-2 border-t border-slate-800 font-bold text-sm">
+                <span class="text-slate-400">إجمالي الطلب:</span>
+                <span id="cart-total" class="text-blue-400">0 ج.م</span>
+            </div>
+        </div>
+
         <!-- بيانات العميل وطريقة الدفع وإرسال الطلب -->
-        <div class="mt-6 bg-slate-900 p-4 rounded-2xl neon-border space-y-3">
+        <div class="bg-slate-900 p-4 rounded-2xl neon-border space-y-3">
             <h4 class="font-bold text-sm text-white">بيانات التوصيل والدفع:</h4>
             
             <input type="text" id="cust-name" placeholder="اسمك الكريم..." class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-blue-500">
@@ -93,10 +112,8 @@
             </button>
         </div>
 
-        <!-- أزرار السوشيال ميديا (تظهر تلقائياً إذا أضافها التاجر) -->
-        <div id="social-links-container" class="flex justify-center gap-4 pt-4">
-            <!-- يتم تعبئتها ديناميكياً -->
-        </div>
+        <!-- أزرار السوشيال ميديا -->
+        <div id="social-links-container" class="flex justify-center gap-3 pt-4 flex-wrap"></div>
 
     </main>
 
@@ -104,7 +121,7 @@
     <div id="admin-modal" class="fixed inset-0 bg-black/80 backdrop-sm hidden z-50 flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 w-full max-w-sm p-6 rounded-3xl space-y-4">
             <h3 class="font-bold text-lg text-white">🔐 لوحة تحكم التاجر</h3>
-            <p class="text-xs text-slate-400">أدخل الرقم السري للتحكم في المتجر (الباسورد: 1234):</p>
+            <p class="text-xs text-slate-400">أدخل الرقم السري للتحكم في المتجر (الباسورد الافتراضي: 1234):</p>
             <input type="password" id="admin-pin" placeholder="أدخل الرقم السري" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm text-white text-center tracking-widest focus:outline-none focus:border-blue-500">
             <div class="flex gap-2">
                 <button onclick="checkPin()" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-2.5 rounded-xl font-bold transition cursor-pointer">دخول</button>
@@ -121,9 +138,53 @@
                 <button onclick="closeAdminPanel()" class="bg-slate-800 px-3 py-1.5 rounded-lg text-xs text-white cursor-pointer">إلغاء ✕</button>
             </div>
 
-            <!-- إعدادات الدفع والسوشيال ميديا -->
+            <!-- حماية وتغيير الرقم السري -->
+            <div class="bg-slate-900 border border-amber-500/40 p-3 rounded-xl space-y-3">
+                <h4 class="font-bold text-amber-400 text-sm">🔒 حماية وتغيير باسورد لوحة التحكم:</h4>
+                <div>
+                    <span class="text-xs text-slate-400 block mb-1">الرقم السري الجديد:</span>
+                    <input type="text" id="setting-new-pin" placeholder="اكتب رقم سري جديد خاص بك" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white">
+                </div>
+                <button type="button" onclick="saveNewPin()" class="w-full bg-amber-600 hover:bg-amber-500 text-white text-xs py-2 rounded-lg font-bold cursor-pointer">تغيير وحفظ الباسورد السرّي 🔑</button>
+            </div>
+
+            <!-- إضافة صنف جديد -->
+            <div class="bg-slate-900 border border-blue-500/40 p-3 rounded-xl space-y-3">
+                <h4 class="font-bold text-blue-400 text-sm">➕ إضافة صنف جديد للمتجر:</h4>
+                <div>
+                    <span class="text-xs text-slate-400 block mb-1">اسم المنتج:</span>
+                    <input type="text" id="new-p-name" placeholder="مثال: تريننج شتوي جديد" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <span class="text-xs text-slate-400 block mb-1">السعر (ج.م):</span>
+                        <input type="number" id="new-p-price" placeholder="مثال: 550" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-sm text-white">
+                    </div>
+                    <div>
+                        <span class="text-xs text-slate-400 block mb-1">المقاسات (بينها فواصل):</span>
+                        <input type="text" id="new-p-sizes" value="M, L, XL, XXL" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-white">
+                    </div>
+                </div>
+                <div>
+                    <span class="text-xs text-slate-400 block mb-1">الألوان (بينها فواصل):</span>
+                    <input type="text" id="new-p-colors" value="أسود, كحلي, رمادي" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white">
+                </div>
+                <div>
+                    <span class="text-xs text-slate-400 block mb-1">صورة المنتج:</span>
+                    <input type="file" id="new-p-image" accept="image/*" class="w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-blue-400 hover:file:bg-slate-700 cursor-pointer">
+                </div>
+                <button type="button" onclick="addNewProduct()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs py-2.5 rounded-lg font-bold cursor-pointer">إضافة المنتج الآن 🚀</button>
+            </div>
+
+            <!-- إعدادات المتجر -->
             <div class="bg-slate-900 border border-slate-800 p-3 rounded-xl space-y-3">
-                <h4 class="font-bold text-white text-sm">💳 إعدادات المحافظ وانستاباي:</h4>
+                <h4 class="font-bold text-white text-sm">🖼️ شعار اللوجو الخاص بالمتجر:</h4>
+                <div>
+                    <span class="text-xs text-slate-400 block mb-1">اختر صورة لوجو المتجر من الاستوديو:</span>
+                    <input type="file" accept="image/*" onchange="updateLogoImage(event)" class="w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-blue-400 hover:file:bg-slate-700 cursor-pointer">
+                </div>
+
+                <h4 class="font-bold text-white text-sm pt-2 border-t border-slate-800">💳 إعدادات المحافظ وانستاباي:</h4>
                 <div>
                     <span class="text-xs text-slate-400 block mb-1">رابط انستاباي (InstaPay Link):</span>
                     <input type="text" id="setting-instapay" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white">
@@ -186,7 +247,9 @@
         ];
 
         let products = JSON.parse(localStorage.getItem('tapio_vigor_products')) || defaultProducts;
+        let adminPin = localStorage.getItem('tapio_vigor_pin') || "1234";
         let settings = JSON.parse(localStorage.getItem('tapio_vigor_settings')) || {
+            logo: "",
             instapay: "https://ipn.eg/",
             vodafone: "01000000000",
             orange: "01200000000",
@@ -198,8 +261,20 @@
             tiktok: ""
         };
 
+        let cart = [];
         let selectedSelections = {};
         let activeWalletNum = "";
+
+        function renderHeader() {
+            let logoWrapper = document.getElementById('header-logo-wrapper');
+            if(settings.logo) {
+                logoWrapper.innerHTML = `<img src="${settings.logo}" alt="Logo" class="w-full h-full object-cover">`;
+                logoWrapper.className = "w-12 h-12 rounded-full overflow-hidden neon-glow border border-blue-500/50";
+            } else {
+                logoWrapper.innerHTML = "V";
+                logoWrapper.className = "w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center font-black text-xl neon-glow text-white";
+            }
+        }
 
         function renderProducts() {
             let container = document.getElementById('products-list');
@@ -238,27 +313,13 @@
                                 <button type="button" onclick="changeQty(${index}, 1)" class="text-blue-400 font-bold text-lg px-2 cursor-pointer">+</button>
                             </div>
                         </div>
+
+                        <button type="button" onclick="addToCart(${index})" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-xl transition text-xs cursor-pointer shadow-md shadow-blue-900/30">
+                            🛒 إضافة إلى السلة
+                        </button>
                     </div>
                 `;
             });
-        }
-
-        function renderSocialLinks() {
-            let container = document.getElementById('social-links-container');
-            container.innerHTML = '';
-            
-            if(settings.whatsapp) {
-                container.innerHTML += `<a href="https://wa.me/${settings.whatsapp}" target="_blank" class="bg-emerald-600/20 border border-emerald-500/40 text-emerald-400 px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition hover:bg-emerald-600 hover:text-white">💬 واتساب</a>`;
-            }
-            if(settings.facebook) {
-                container.innerHTML += `<a href="${settings.facebook}" target="_blank" class="bg-blue-600/20 border border-blue-500/40 text-blue-400 px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition hover:bg-blue-600 hover:text-white">👥 فيسبوك</a>`;
-            }
-            if(settings.instagram) {
-                container.innerHTML += `<a href="${settings.instagram}" target="_blank" class="bg-pink-600/20 border border-pink-500/40 text-pink-400 px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition hover:bg-pink-600 hover:text-white">📸 انستجرام</a>`;
-            }
-            if(settings.tiktok) {
-                container.innerHTML += `<a href="${settings.tiktok}" target="_blank" class="bg-slate-800 border border-slate-700 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition hover:bg-slate-700">🎵 تيك توك</a>`;
-            }
         }
 
         function selectSize(pIndex, size) {
@@ -283,6 +344,95 @@
                 let current = parseInt(qtyEl.innerText) + delta;
                 if(current < 1) current = 1;
                 qtyEl.innerText = current;
+            }
+        }
+
+        // إضافة المنتج للسلة بالمقاس واللون والكمية المحددة
+        function addToCart(index) {
+            let p = products[index];
+            let sel = selectedSelections[index] || {};
+            let qty = parseInt(document.getElementById(`qty-${index}`).innerText) || 1;
+
+            if(!sel.size || !sel.color) {
+                alert("من فضلك اختر المقاس واللون أولاً!");
+                return;
+            }
+
+            // التحقق هل المنتج بنفس المقاس واللون موجود مسبقاً في السلة؟
+            let existingItem = cart.find(item => item.id === p.id && item.size === sel.size && item.color === sel.color);
+            if(existingItem) {
+                existingItem.qty += qty;
+            } else {
+                cart.push({
+                    id: p.id,
+                    name: p.name,
+                    price: p.price,
+                    size: sel.size,
+                    color: sel.color,
+                    qty: qty
+                });
+            }
+
+            renderCart();
+            alert(`تمت إضافة "${p.name}" إلى السلة بنجاح! 🛒✨`);
+        }
+
+        function removeFromCart(cartIndex) {
+            cart.splice(cartIndex, 1);
+            renderCart();
+        }
+
+        function renderCart() {
+            let container = document.getElementById('cart-items');
+            let countEl = document.getElementById('cart-count');
+            let totalEl = document.getElementById('cart-total');
+            
+            countEl.innerText = cart.reduce((sum, item) => sum + item.qty, 0);
+
+            if(cart.length === 0) {
+                container.innerHTML = `<p class="text-center text-slate-500 py-3">السلة فارغة حالياً..</p>`;
+                totalEl.innerText = "0 ج.م";
+                return;
+            }
+
+            container.innerHTML = '';
+            let total = 0;
+
+            cart.forEach((item, index) => {
+                let itemTotal = item.price * item.qty;
+                total += itemTotal;
+                container.innerHTML += `
+                    <div class="flex justify-between items-center bg-slate-950 p-2.5 rounded-xl border border-slate-800">
+                        <div>
+                            <p class="font-bold text-white">${item.name}</p>
+                            <p class="text-[11px] text-slate-400">مقاس: ${item.size} | لون: ${item.color} | الكمية: ${item.qty}</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="text-blue-400 font-bold">${itemTotal} ج.م</span>
+                            <button type="button" onclick="removeFromCart(${index})" class="text-red-400 hover:text-red-300 font-bold cursor-pointer px-1">✕</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            totalEl.innerText = total + " ج.م";
+        }
+
+        function renderSocialLinks() {
+            let container = document.getElementById('social-links-container');
+            container.innerHTML = '';
+            
+            if(settings.whatsapp) {
+                container.innerHTML += `<a href="https://wa.me/${settings.whatsapp}" target="_blank" class="bg-emerald-600/20 border border-emerald-500/40 text-emerald-400 px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1 transition hover:bg-emerald-600 hover:text-white">💬 واتساب</a>`;
+            }
+            if(settings.facebook) {
+                container.innerHTML += `<a href="${settings.facebook}" target="_blank" class="bg-blue-600/20 border border-blue-500/40 text-blue-400 px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1 transition hover:bg-blue-600 hover:text-white">👥 فيسبوك</a>`;
+            }
+            if(settings.instagram) {
+                container.innerHTML += `<a href="${settings.instagram}" target="_blank" class="bg-pink-600/20 border border-pink-500/40 text-pink-400 px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1 transition hover:bg-pink-600 hover:text-white">📸 انستجرام</a>`;
+            }
+            if(settings.tiktok) {
+                container.innerHTML += `<a href="${settings.tiktok}" target="_blank" class="bg-slate-800 border border-slate-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1 transition hover:bg-slate-700">🎵 تيك توك</a>`;
             }
         }
 
@@ -348,29 +498,25 @@
                 return;
             }
 
+            if(cart.length === 0) {
+                alert("سلة المشتريات فارغة! اختر منتجاتك أولاً.");
+                return;
+            }
+
             let payText = "الدفع عند الاستلام (كاش)";
             if(paymentMethod === 'instapay') payText = `انستاباي (${settings.instapay})`;
             if(paymentMethod === 'wallet') payText = `محفظة إلكترونية (رقم: ${activeWalletNum || 'لم يتم تحديد الشبكة'})`;
 
             let orderText = `⚡ أوردر جديد من متجر Vigor:\n\n👤 الاسم: ${name}\n📍 العنوان: ${address}\n💳 طريقة الدفع: ${payText}\n\n📦 المنتجات المطلوبة:\n`;
-            let hasItems = false;
+            let totalOrderPrice = 0;
 
-            products.forEach((p, index) => {
-                let qtyEl = document.getElementById(`qty-${index}`);
-                if(qtyEl) {
-                    let qty = parseInt(qtyEl.innerText);
-                    let sel = selectedSelections[index] || {};
-                    if(qty > 0 && sel.size && sel.color) {
-                        hasItems = true;
-                        orderText += `- ${p.name}\n  المقاس: ${sel.size} | اللون: ${sel.color} | الكمية: ${qty} | الإجمالي: ${p.price * qty} ج.م\n\n`;
-                    }
-                }
+            cart.forEach((item) => {
+                let itemTotal = item.price * item.qty;
+                totalOrderPrice += itemTotal;
+                orderText += `- ${item.name}\n  المقاس: ${item.size} | اللون: ${item.color} | الكمية: ${item.qty} | الإجمالي: ${itemTotal} ج.م\n\n`;
             });
 
-            if(!hasItems) {
-                alert("من فضلك اختر مقاس ولون المنتج قبل إرسال الطلب!");
-                return;
-            }
+            orderText += `💰 إجمالي الأوردر: ${totalOrderPrice} ج.م`;
 
             let phone = settings.whatsapp || "201000000000";
             let url = `https://wa.me/${phone}?text=${encodeURIComponent(orderText)}`;
@@ -384,14 +530,14 @@
 
         function checkPin() {
             let pin = document.getElementById('admin-pin').value;
-            if(pin === "1234") {
+            if(pin === adminPin) {
                 closeAdminModal();
                 document.getElementById('admin-pin').value = "";
                 openAdminPanel();
                 loadSettingsInput();
                 renderAdminProducts();
             } else {
-                alert("الرقم السري غير صحيح! (جرب 1234)");
+                alert("الرقم السري غير صحيح!");
             }
         }
 
@@ -405,6 +551,108 @@
             document.getElementById('setting-facebook').value = settings.facebook || '';
             document.getElementById('setting-instagram').value = settings.instagram || '';
             document.getElementById('setting-tiktok').value = settings.tiktok || '';
+        }
+
+        function saveNewPin() {
+            let newPin = document.getElementById('setting-new-pin').value.trim();
+            if(!newPin) {
+                alert("من فضلك اكتب رقم سري جديد!");
+                return;
+            }
+            adminPin = newPin;
+            localStorage.setItem('tapio_vigor_pin', newPin);
+            document.getElementById('setting-new-pin').value = '';
+            alert("تم تغيير الرقم السري بنجاح! احفظه في مكان آمن 🔐✨");
+        }
+
+        function addNewProduct() {
+            let name = document.getElementById('new-p-name').value.trim();
+            let price = parseFloat(document.getElementById('new-p-price').value);
+            let sizesStr = document.getElementById('new-p-sizes').value.trim();
+            let colorsStr = document.getElementById('new-p-colors').value.trim();
+            let imageInput = document.getElementById('new-p-image');
+
+            if(!name || isNaN(price)) {
+                alert("من فضلك اكتب اسم المنتج والسعر بشكل صحيح!");
+                return;
+            }
+
+            let sizes = sizesStr ? sizesStr.split(',').map(s => s.trim()) : ["M", "L", "XL"];
+            let colors = colorsStr ? colorsStr.split(',').map(c => c.trim()) : ["أسود"];
+
+            let file = imageInput.files[0];
+            if (file) {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    let img = new Image();
+                    img.onload = function() {
+                        let canvas = document.createElement('canvas');
+                        let maxWidth = 500;
+                        let scale = maxWidth / img.width;
+                        canvas.width = maxWidth;
+                        canvas.height = img.height * scale;
+                        
+                        let ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        let compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                        
+                        saveNewProductObj(name, price, sizes, colors, compressedDataUrl);
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                saveNewProductObj(name, price, sizes, colors, "https://images.unsplash.com/photo-1518310383802-640c2de311b2?w=500");
+            }
+        }
+
+        function saveNewProductObj(name, price, sizes, colors, image) {
+            let newProd = {
+                id: Date.now(),
+                name: name,
+                price: price,
+                available: true,
+                sizes: sizes,
+                colors: colors,
+                image: image
+            };
+            products.push(newProd);
+            localStorage.setItem('tapio_vigor_products', JSON.stringify(products));
+            renderProducts();
+            renderAdminProducts();
+            
+            document.getElementById('new-p-name').value = '';
+            document.getElementById('new-p-price').value = '';
+            document.getElementById('new-p-image').value = '';
+            alert("تم إضافة المنتج الجديد بنجاح للمتجر! 🎉🚀");
+        }
+
+        function updateLogoImage(event) {
+            let file = event.target.files[0];
+            if (file) {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    let img = new Image();
+                    img.onload = function() {
+                        let canvas = document.createElement('canvas');
+                        let maxWidth = 200;
+                        let scale = maxWidth / img.width;
+                        canvas.width = maxWidth;
+                        canvas.height = img.height * scale;
+                        
+                        let ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        
+                        let compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                        settings.logo = compressedDataUrl;
+                        localStorage.setItem('tapio_vigor_settings', JSON.stringify(settings));
+                        renderHeader();
+                        alert("تم تحديث لوجو المتجر بنجاح! 🖼️✨");
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
         }
 
         function saveSettings() {
@@ -464,8 +712,8 @@
         function updateProductImage(index, event) {
             let file = event.target.files[0];
             if (file) {
-                let reader = new FileReader();
-                reader.onload = function(e) {
+                let reducer = new FileReader();
+                reducer.onload = function(e) {
                     let img = new Image();
                     img.onload = function() {
                         let canvas = document.createElement('canvas');
@@ -490,7 +738,7 @@
                     };
                     img.src = e.target.result;
                 };
-                reader.readAsDataURL(file);
+                reducer.readAsDataURL(file);
             }
         }
 
@@ -501,10 +749,12 @@
             renderAdminProducts();
         }
 
+        renderHeader();
         renderProducts();
         renderSocialLinks();
     </script>
 </body>
 </html>
+
 
 
