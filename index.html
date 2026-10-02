@@ -35,12 +35,8 @@
     <!-- المحتوى الرئيسي -->
     <main class="max-w-md mx-auto p-4 space-y-4">
         
-        <!-- بانر ترويجي -->
-        <div class="bg-gradient-to-r from-blue-900 to-slate-900 p-4 rounded-2xl neon-border text-center">
-            <span class="bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded-full uppercase">عرض خاص</span>
-            <h2 class="font-bold text-lg mt-2 text-white">🔥 أقوى طقم جيم شتوي</h2>
-            <p class="text-xs text-slate-300 mt-1">اطلب الطقم الكامل (هودي + بنطلون) وخد الشحن مجاناً!</p>
-        </div>
+        <!-- بانر العروض الديناميكي -->
+        <div id="promo-banner-container"></div>
 
         <h3 class="font-bold text-sm text-slate-400 mt-6 mb-2">🛒 اختر منتجاتك:</h3>
 
@@ -136,6 +132,27 @@
             <div class="flex justify-between items-center border-b border-slate-800 pb-3">
                 <h3 class="font-bold text-lg text-blue-400">⚙️ لوحة تعديل Vigor</h3>
                 <button onclick="closeAdminPanel()" class="bg-slate-800 px-3 py-1.5 rounded-lg text-xs text-white cursor-pointer">إلغاء ✕</button>
+            </div>
+
+            <!-- التحكم في شاشة العروض والبانر الترويجي -->
+            <div class="bg-slate-900 border border-purple-500/40 p-3 rounded-xl space-y-3">
+                <h4 class="font-bold text-purple-400 text-sm">🔥 إعدادات شاشة العروض (البانر):</h4>
+                <div class="flex items-center justify-between bg-slate-800 p-2.5 rounded-lg">
+                    <span class="text-xs text-slate-300">إظهار البانر الترويجي في المتجر:</span>
+                    <input type="checkbox" id="setting-banner-show" class="w-4 h-4 accent-blue-600 cursor-pointer">
+                </div>
+                <div>
+                    <span class="text-xs text-slate-400 block mb-1">عنوان الشارة (Tag) مثلاً (عرض خاص):</span>
+                    <input type="text" id="setting-banner-tag" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white">
+                </div>
+                <div>
+                    <span class="text-xs text-slate-400 block mb-1">عنوان العرض الرئيسي:</span>
+                    <input type="text" id="setting-banner-title" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white">
+                </div>
+                <div>
+                    <span class="text-xs text-slate-400 block mb-1">وصف العرض والخصم:</span>
+                    <input type="text" id="setting-banner-desc" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white">
+                </div>
             </div>
 
             <!-- حماية وتغيير الرقم السري -->
@@ -258,7 +275,11 @@
             whatsapp: "201000000000",
             facebook: "",
             instagram: "",
-            tiktok: ""
+            tiktok: "",
+            bannerShow: true,
+            bannerTag: "عرض خاص",
+            bannerTitle: "🔥 أقوى طقم جيم شتوي",
+            bannerDesc: "اطلب الطقم الكامل (هودي + بنطلون) وخد الشحن مجاناً!"
         };
 
         let cart = [];
@@ -274,6 +295,21 @@
                 logoWrapper.innerHTML = "V";
                 logoWrapper.className = "w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center font-black text-xl neon-glow text-white";
             }
+        }
+
+        function renderBanner() {
+            let container = document.getElementById('promo-banner-container');
+            if (!settings.bannerShow) {
+                container.innerHTML = '';
+                return;
+            }
+            container.innerHTML = `
+                <div class="bg-gradient-to-r from-blue-900 to-slate-900 p-4 rounded-2xl neon-border text-center">
+                    <span class="bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded-full uppercase">${settings.bannerTag || 'عرض خاص'}</span>
+                    <h2 class="font-bold text-lg mt-2 text-white">${settings.bannerTitle || ''}</h2>
+                    <p class="text-xs text-slate-300 mt-1">${settings.bannerDesc || ''}</p>
+                </div>
+            `;
         }
 
         function renderProducts() {
@@ -347,7 +383,6 @@
             }
         }
 
-        // إضافة المنتج للسلة بالمقاس واللون والكمية المحددة
         function addToCart(index) {
             let p = products[index];
             let sel = selectedSelections[index] || {};
@@ -358,7 +393,6 @@
                 return;
             }
 
-            // التحقق هل المنتج بنفس المقاس واللون موجود مسبقاً في السلة؟
             let existingItem = cart.find(item => item.id === p.id && item.size === sel.size && item.color === sel.color);
             if(existingItem) {
                 existingItem.qty += qty;
@@ -542,6 +576,11 @@
         }
 
         function loadSettingsInput() {
+            document.getElementById('setting-banner-show').checked = settings.bannerShow !== false;
+            document.getElementById('setting-banner-tag').value = settings.bannerTag || '';
+            document.getElementById('setting-banner-title').value = settings.bannerTitle || '';
+            document.getElementById('setting-banner-desc').value = settings.bannerDesc || '';
+
             document.getElementById('setting-instapay').value = settings.instapay || '';
             document.getElementById('setting-vodafone').value = settings.vodafone || '';
             document.getElementById('setting-orange').value = settings.orange || '';
@@ -656,6 +695,11 @@
         }
 
         function saveSettings() {
+            settings.bannerShow = document.getElementById('setting-banner-show').checked;
+            settings.bannerTag = document.getElementById('setting-banner-tag').value;
+            settings.bannerTitle = document.getElementById('setting-banner-title').value;
+            settings.bannerDesc = document.getElementById('setting-banner-desc').value;
+
             settings.instapay = document.getElementById('setting-instapay').value;
             settings.vodafone = document.getElementById('setting-vodafone').value;
             settings.orange = document.getElementById('setting-orange').value;
@@ -667,6 +711,7 @@
             settings.tiktok = document.getElementById('setting-tiktok').value;
 
             localStorage.setItem('tapio_vigor_settings', JSON.stringify(settings));
+            renderBanner();
             renderSocialLinks();
             alert("تم حفظ كافة الإعدادات بنجاح! 🚀✨");
         }
@@ -712,8 +757,8 @@
         function updateProductImage(index, event) {
             let file = event.target.files[0];
             if (file) {
-                let reducer = new FileReader();
-                reducer.onload = function(e) {
+                let reader = new FileReader();
+                reader.onload = function(e) {
                     let img = new Image();
                     img.onload = function() {
                         let canvas = document.createElement('canvas');
@@ -738,7 +783,7 @@
                     };
                     img.src = e.target.result;
                 };
-                reducer.readAsDataURL(file);
+                reader.readAsDataURL(file);
             }
         }
 
@@ -750,11 +795,13 @@
         }
 
         renderHeader();
+        renderBanner();
         renderProducts();
         renderSocialLinks();
     </script>
 </body>
 </html>
+
 
 
 
