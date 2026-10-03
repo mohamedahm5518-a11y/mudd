@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bellissimo | Italian Cafe & Pizzeria - Dine-In Engine</title>
+    <title>Bellissimo | Italian Cafe & Pizzeria - Smart Dine-In Engine</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
@@ -91,7 +91,17 @@
             <input type="text" id="cust-name" placeholder="اسمك الكريم..." class="w-full bg-stone-900/90 border border-stone-700/80 rounded-2xl p-3.5 text-sm text-white focus:outline-none focus:border-amber-500 transition">
             <input type="text" id="table-number" placeholder="رقم الطاولة في الكافيه (مثال: Table 4)..." class="w-full bg-stone-900/90 border border-stone-700/80 rounded-2xl p-3.5 text-sm text-white focus:outline-none focus:border-amber-500 transition">
             
-            <button onclick="sendOrderDirectly()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black py-4 rounded-2xl transition shadow-xl shadow-emerald-900/40 flex items-center justify-center gap-2 cursor-pointer text-sm">
+            <!-- أزرار خدمة الطاولة السريعة (طلب الويتر أو الحساب) -->
+            <div class="grid grid-cols-2 gap-2 pt-1">
+                <button type="button" onclick="sendServicePing('استدعاء الويتر 🛎️')" class="bg-stone-900 hover:bg-stone-800 border border-stone-700 text-amber-400 text-xs py-3 rounded-xl font-bold cursor-pointer transition flex items-center justify-center gap-1">
+                    🛎️ استدعاء الويتر
+                </button>
+                <button type="button" onclick="sendServicePing('طلب الحساب / Bill 🧾')" class="bg-stone-900 hover:bg-stone-800 border border-stone-700 text-amber-400 text-xs py-3 rounded-xl font-bold cursor-pointer transition flex items-center justify-center gap-1">
+                    🧾 طلب الحساب
+                </button>
+            </div>
+
+            <button onclick="sendOrderDirectly()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black py-4 rounded-2xl transition shadow-xl shadow-emerald-900/40 flex items-center justify-center gap-2 cursor-pointer text-sm mt-2">
                 💬 إرسال الأوردر للمطبخ على الواتساب 🚀
             </button>
         </div>
@@ -133,13 +143,13 @@
         </div>
     </div>
 
-    <!-- شاشة المطبخ والاستاف الذكية (Station Handoff) -->
+    <!-- شاشة المطبخ والاستاف الذكية (Station Handoff) مع التزامن التلقائي وصوت الجرس -->
     <div id="staff-kitchen-modal" class="fixed inset-0 bg-stone-950 hidden z-60 overflow-y-auto p-4">
         <div class="max-w-md mx-auto space-y-4 py-6">
             <div class="flex justify-between items-center border-b border-stone-800 pb-3">
                 <div>
-                    <h3 class="font-black text-lg text-amber-400">👨‍🍳 شاشة المطبخ والبار (Staff Station)</h3>
-                    <p class="text-[10px] text-stone-400">إدارة الأوردرات وتحديث حالة التسليم أوتوماتيك</p>
+                    <h3 class="font-black text-lg text-amber-400">👨‍🍳 شاشة المطبخ والبار (Live KDS)</h3>
+                    <p class="text-[10px] text-stone-400">تحديث تلقائي لحظي + عداد التأخير الذكي</p>
                 </div>
                 <button onclick="closeStaffKitchenModal()" class="bg-stone-800 px-3.5 py-2 rounded-xl text-xs text-white cursor-pointer font-bold">إغلاق ✕</button>
             </div>
@@ -188,7 +198,7 @@
                     </div>
                 </div>
                 <button type="button" onclick="openStaffKitchenModal()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl text-xs transition cursor-pointer shadow-lg shadow-emerald-900/40 flex items-center justify-center gap-2">
-                    👨‍‍🍳 فتح شاشة الاستاف والمطبخ المباشرة
+                    👨‍🍳 فتح شاشة الاستاف والمطبخ المباشرة
                 </button>
             </div>
 
@@ -247,6 +257,33 @@
         let selectedSelections = {};
         let currentCategory = "الكل";
         let currentStaffTab = "kitchen";
+
+        // تشغيل صوت التنبيه (بيل مطعم) أوتوماتيك
+        function playChimeSound() {
+            try {
+                let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                let osc = audioCtx.createOscillator();
+                let gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, audioCtx.currentTime); // نغمة واضحة
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1.2);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 1.2);
+            } catch(e) { console.log("Audio not allowed yet"); }
+        }
+
+        // التزامن التلقائي الفوري بين الأجهزة (Auto-Sync)
+        window.addEventListener('storage', function(e) {
+            if(e.key === 'tapio_bellissimo_saved_orders') {
+                playChimeSound();
+                if(!document.getElementById('staff-kitchen-modal').classList.contains('hidden')) {
+                    renderStaffOrders();
+                }
+            }
+        });
 
         let logoClicks = 0;
         let logoTimer = null;
@@ -447,6 +484,42 @@
             totalEl.innerText = total + " ج.م";
         }
 
+        // إرسال طلب خدمة سريع (استدعاء الويتر أو الحساب)
+        function sendServicePing(serviceType) {
+            let name = document.getElementById('cust-name').value.trim();
+            let tableNum = document.getElementById('table-number').value.trim();
+
+            if(!name || !tableNum) {
+                alert("من فضلك اكتب اسمك ورقم الطاولة أولاً عشان نقدر نبعتلك الخدمة بسرعة!");
+                return;
+            }
+
+            let orderId = "#PING-" + Math.floor(1000 + Math.random() * 9000);
+            let pingDetails = {
+                id: orderId,
+                date: new Date().toLocaleString('ar-EG'),
+                name: name,
+                table: tableNum,
+                items: [{ name: serviceType, size: 'طاولة', qty: 1 }],
+                kitchenItems: [{ name: serviceType, size: 'طاولة', qty: 1 }],
+                barItems: [],
+                total: 0,
+                status: 'تنبيه عاجل 🔔',
+                timestamp: Date.now()
+            };
+
+            let savedOrders = JSON.parse(localStorage.getItem('tapio_bellissimo_saved_orders') || '[]');
+            savedOrders.unshift(pingDetails);
+            localStorage.setItem('tapio_bellissimo_saved_orders', JSON.stringify(savedOrders));
+
+            let pingText = `🛎️ طلب خدمة طاولة سريع - Bellissimo:\n📌 ${serviceType}\n👤 العميل: ${name}\n🪑 رقم الطاولة: ${tableNum}`;
+            let phone = settings.whatsapp || "201000000000";
+            
+            playChimeSound();
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(pingText)}`, '_blank');
+            alert(`تم إرسال طلب (${serviceType}) للاستاف بنجاح وسيتم خدمتك فوراً! 🛎️✨`);
+        }
+
         function sendOrderDirectly() {
             let name = document.getElementById('cust-name').value.trim();
             let tableNum = document.getElementById('table-number').value.trim();
@@ -469,7 +542,6 @@
 
             let orderId = "#TABLE-" + Math.floor(1000 + Math.random() * 9000);
             
-            // فصل الأوردرات أوتوماتيك (مطبخ لأصناف الأكل وبار للمشروبات)
             let kitchenItems = cart.filter(i => !i.category.includes('كافيه'));
             let barItems = cart.filter(i => i.category.includes('كافيه'));
 
@@ -482,14 +554,15 @@
                 kitchenItems,
                 barItems,
                 total: cart.reduce((sum, i) => sum + (i.price * i.qty), 0),
-                status: 'تحضير 🟢'
+                status: 'تحضير 🟢',
+                timestamp: Date.now()
             };
 
             let savedOrders = JSON.parse(localStorage.getItem('tapio_bellissimo_saved_orders') || '[]');
             savedOrders.unshift(orderDetails);
             localStorage.setItem('tapio_bellissimo_saved_orders', JSON.stringify(savedOrders));
 
-            // تشغيل شاشة التتبع الحي للزبون
+            playChimeSound();
             startLiveTracking(orderId);
 
             let orderText = `🪑 طلب طاولة جديد (صالة ذكية) - Bellissimo:\n📌 رقم الطلب: ${orderId}\n\n👤 اسم العميل: ${name}\n🪑 رقم الطاولة: ${tableNum}\n\n📦 الأصناف:\n`;
@@ -502,7 +575,12 @@
             orderText += `\n💰 الإجمالي الكلي: ${totalOrderPrice} ج.م`;
 
             let phone = settings.whatsapp || "201000000000";
-            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(orderText)}`, '_blank');
+            let waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(orderText)}`;
+            
+            let whatsappWindow = window.open(waUrl, '_blank');
+            if (!whatsappWindow) {
+                window.location.href = waUrl;
+            }
         }
 
         function startLiveTracking(orderId) {
@@ -586,11 +664,22 @@
             container.innerHTML = '';
             filtered.forEach((o, index) => {
                 let itemsList = (currentStaffTab === 'kitchen' ? o.kitchenItems : o.barItems).map(i => `• ${i.name} (الحجم: ${i.size} | العدد: ${i.qty})`).join('<br>');
+                
+                // حساب عداد الوقت وتنبيه التأخير (أكثر من 10 دقائق ينور أحمر)
+                let elapsedMinutes = o.timestamp ? Math.floor((Date.now() - o.timestamp) / 60000) : 0;
+                let isDelayed = elapsedMinutes >= 10;
+                let timerBadge = isDelayed 
+                    ? `<span class="bg-red-950 text-red-400 border border-red-600/50 px-2 py-0.5 rounded-md font-black animate-pulse">⚠️ متأخر (${elapsedMinutes} د)</span>` 
+                    : `<span class="bg-stone-900 text-stone-400 px-2 py-0.5 rounded-md font-semibold">⏱️ منذ ${elapsedMinutes} د</span>`;
+
                 container.innerHTML += `
-                    <div class="italian-card p-4 rounded-2xl space-y-2.5 text-xs shadow-lg border border-amber-500/30">
+                    <div class="italian-card p-4 rounded-2xl space-y-2.5 text-xs shadow-lg border ${isDelayed ? 'border-red-500/80 bg-red-950/20' : 'border-amber-500/30'}">
                         <div class="flex justify-between items-center border-b border-stone-800 pb-2">
                             <span class="font-black text-amber-400 text-sm">${o.id} - طاولة: ${o.table}</span>
-                            <span class="bg-emerald-600/20 text-emerald-400 px-2 py-0.5 rounded-md font-bold">${o.status}</span>
+                            <div class="flex items-center gap-1.5">
+                                ${timerBadge}
+                                <span class="bg-emerald-600/20 text-emerald-400 px-2 py-0.5 rounded-md font-bold">${o.status}</span>
+                            </div>
                         </div>
                         <p class="text-white"><strong>العميل:</strong> ${o.name}</p>
                         <div class="bg-stone-900/90 p-2.5 rounded-xl text-stone-300 border border-stone-800">
@@ -731,6 +820,7 @@
             alert("تم حفظ الإعدادات بنجاح! 🚀");
         }
 
+        renderAdminProducts();
         renderBanner();
         renderCategories();
         renderProducts();
