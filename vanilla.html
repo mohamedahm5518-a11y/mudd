@@ -10,6 +10,9 @@
         body { font-family: 'Cairo', sans-serif; background-color: #0f1015; color: #f3f4f6; }
         .neon-glow { box-shadow: 0 0 20px rgba(244, 114, 182, 0.25); }
         .neon-border { border: 1px solid rgba(244, 114, 182, 0.35); }
+        /* إخفاء شريط التمرير للأقسام مع السماح بالسحب */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="min-h-screen pb-12">
@@ -35,7 +38,14 @@
         <!-- بانر العروض الديناميكي -->
         <div id="promo-banner-container"></div>
 
-        <h3 class="font-bold text-sm text-slate-400 mt-6 mb-2">🛍️ استعرض منتجاتنا:</h3>
+        <h3 class="font-bold text-sm text-slate-400 mt-6 mb-2">🛍️ أقسام المتجر:</h3>
+
+        <!-- شريط الأقسام -->
+        <div id="categories-bar" class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+            <!-- سيتم تعبئتها ديناميكياً -->
+        </div>
+
+        <h3 class="font-bold text-sm text-slate-400 mt-4 mb-2">🛒 المنتجات المتاحة:</h3>
 
         <!-- قائمة المنتجات -->
         <div id="products-list" class="space-y-4"></div>
@@ -111,12 +121,12 @@
             </button>
         </div>
 
-        <!-- صندوق التواصل المباشر (استفسار عام) -->
-        <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-3 mt-6 neon-border">
-            <h4 class="font-bold text-sm text-white flex items-center gap-1.5">💬 عندك استفسار عن منتج أو سعر جملة؟ تواصل معنا</h4>
-            <textarea id="direct-msg" placeholder="اكتب رسالتك أو استفسارك هنا..." rows="2" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-pink-500 resize-none"></textarea>
-            <button type="button" onclick="sendDirectMessage()" class="w-full bg-pink-600 hover:bg-pink-500 text-white font-bold py-3 rounded-xl transition text-xs cursor-pointer shadow-md shadow-pink-900/30 flex items-center justify-center gap-2">
-                📲 تواصل معنا مباشرة عبر واتساب
+        <!-- زر طلب موقع المحل -->
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-3 mt-6 neon-border text-center">
+            <h4 class="font-bold text-sm text-white flex items-center justify-center gap-1.5">📍 عاوز تزورنا أو تعرف مكاننا بالتفصيل؟</h4>
+            <p class="text-[11px] text-slate-400">اضغط هنا لطلب موقع المحل أو الفرع فوراً عبر الواتساب:</p>
+            <button type="button" onclick="requestLocation()" class="w-full bg-pink-600 hover:bg-pink-500 text-white font-bold py-3.5 rounded-xl transition text-xs cursor-pointer shadow-md shadow-pink-900/30 flex items-center justify-center gap-2">
+                📍 طلب موقع المحل عبر واتساب
             </button>
         </div>
 
@@ -215,12 +225,16 @@
                 <button type="button" onclick="saveNewPin()" class="w-full bg-amber-600 hover:bg-amber-500 text-white text-xs py-2 rounded-lg font-bold cursor-pointer">تغيير وحفظ الباسورد 🔑</button>
             </div>
 
-            <!-- إضافة صنف جديد -->
+            <!-- إضافة صنف جديد بالأقسام -->
             <div class="bg-slate-900 border border-pink-500/40 p-3 rounded-xl space-y-3">
-                <h4 class="font-bold text-pink-400 text-sm">➕ إضافة منتج تجميل جديد (جملة/قطاعي):</h4>
+                <h4 class="font-bold text-pink-400 text-sm">➕ إضافة منتج تجميل جديد (مع القسم):</h4>
                 <div>
                     <span class="text-xs text-slate-400 block mb-1">اسم المنتج:</span>
-                    <input type="text" id="new-p-name" placeholder="مثال: روج مات أصلي - سعر الجملة دستة" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white">
+                    <input type="text" id="new-p-name" placeholder="مثال: روج مات أصلي - دستة جملة" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white">
+                </div>
+                <div>
+                    <span class="text-xs text-slate-400 block mb-1">القسم (مثل: مكياج، عطور، عناية):</span>
+                    <input type="text" id="new-p-category" value="مكياج" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white">
                 </div>
                 <div class="grid grid-cols-2 gap-2">
                     <div>
@@ -229,12 +243,12 @@
                     </div>
                     <div>
                         <span class="text-xs text-slate-400 block mb-1">الدرجات (بينها فواصل):</span>
-                        <input type="text" id="new-p-sizes" value="درجة 01, درجة 02, درجة 03" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-white">
+                        <input type="text" id="new-p-sizes" value="درجة 01, درجة 02" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-white">
                     </div>
                 </div>
                 <div>
                     <span class="text-xs text-slate-400 block mb-1">الألوان / الأنواع (بينها فواصل):</span>
-                    <input type="text" id="new-p-colors" value="نود, كشميري, أحمر" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white">
+                    <input type="text" id="new-p-colors" value="نود, كشميري" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white">
                 </div>
                 <div>
                     <span class="text-xs text-slate-400 block mb-1">صورة المنتج:</span>
@@ -296,7 +310,7 @@
                 <button onclick="saveSettings()" class="w-full bg-pink-600 hover:bg-pink-500 text-white text-xs py-2 rounded-lg font-bold cursor-pointer mt-2">حفظ كافة الإعدادات 💾</button>
             </div>
 
-            <p class="text-xs text-slate-400 pt-2">إدارة المنتجات والأسعار:</p>
+            <p class="text-xs text-slate-400 pt-2">إدارة المنتجات والأسعار والأقسام:</p>
             <div id="admin-products-list" class="space-y-4"></div>
         </div>
     </div>
@@ -311,9 +325,9 @@
         localStorage.setItem('vanilla_store_visits', visits);
 
         let defaultProducts = [
-            { id: 1, name: "مجموعة روج مات ثابت (دستة جملة)", price: 350, available: true, sizes: ["درجة 01", "درجة 02", "درجة 03"], colors: ["نود", "كشميري", "أحمر كلاسيك"], image: "https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=500" },
-            { id: 2, name: "بالتة أشادو فخمة (عروض القطاعي)", price: 250, available: true, sizes: ["قياسي"], colors: ["درجات الترابي", "درجات الـ Rose"], image: "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=500" },
-            { id: 3, name: "عطر فانيلا الملكي اللكجري", price: 450, available: true, sizes: ["50 مل", "100 مل"], colors: ["فانيلا مركزة"], image: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=500" }
+            { id: 1, name: "مجموعة روج مات ثابت (دستة جملة)", price: 350, category: "مكياج", available: true, sizes: ["درجة 01", "درجة 02", "درجة 03"], colors: ["نود", "كشميري", "أحمر كلاسيك"], image: "https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=500" },
+            { id: 2, name: "بالتة أشادو فخمة (عروض القطاعي)", price: 250, category: "مكياج", available: true, sizes: ["قياسي"], colors: ["درجات الترابي", "درجات الـ Rose"], image: "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=500" },
+            { id: 3, name: "عطر فانيلا الملكي اللكجري", price: 450, category: "عطور", available: true, sizes: ["50 مل", "100 مل"], colors: ["فانيلا مركزة"], image: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=500" }
         ];
 
         let defaultReviews = [
@@ -344,6 +358,7 @@
         let cart = [];
         let selectedSelections = {};
         let activeWalletNum = "";
+        let currentCategory = "الكل";
 
         let logoClicks = 0;
         let logoTimer = null;
@@ -381,6 +396,35 @@
                     <p class="text-xs text-slate-300 mt-1">${settings.bannerDesc || ''}</p>
                 </div>
             `;
+        }
+
+        function renderCategories() {
+            let container = document.getElementById('categories-bar');
+            let categories = ["الكل"];
+            products.forEach(p => {
+                let cat = p.category || "أخرى";
+                if(!categories.includes(cat)) categories.push(cat);
+            });
+
+            container.innerHTML = "";
+            categories.forEach(cat => {
+                let isActive = currentCategory === cat;
+                let btnClass = isActive 
+                    ? "bg-pink-600 text-white font-bold shadow-md shadow-pink-900/30" 
+                    : "bg-slate-900 text-slate-300 border border-slate-800 hover:border-pink-500/50";
+                
+                container.innerHTML += `
+                    <button type="button" onclick="filterCategory('${cat}')" class="text-xs px-4 py-2 rounded-xl transition whitespace-nowrap cursor-pointer ${btnClass}">
+                        ${cat}
+                    </button>
+                `;
+            });
+        }
+
+        function filterCategory(cat) {
+            currentCategory = cat;
+            renderCategories();
+            renderProducts();
         }
 
         function renderReviews() {
@@ -451,8 +495,20 @@
             let container = document.getElementById('products-list');
             container.innerHTML = '';
             
-            products.forEach((p, index) => {
-                if(!p.available) return;
+            let filteredProducts = products.filter(p => {
+                if(!p.available) return false;
+                if(currentCategory === "الكل") return true;
+                return (p.category || "أخرى") === currentCategory;
+            });
+
+            if(filteredProducts.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-500 text-center py-6">لا توجد منتجات في هذا القسم حالياً..</p>`;
+                return;
+            }
+
+            filteredProducts.forEach((p) => {
+                // البحث عن الـ index الحقيقي في المصفوفة الأساسية
+                let index = products.findIndex(item => item.id === p.id);
                 
                 let sizesHTML = p.sizes.map(s => `<button type="button" onclick="selectSize(${index}, '${s}')" id="size-${index}-${s}" class="size-btn-${index} text-xs border border-slate-700 px-3 py-1.5 rounded-lg text-slate-300 transition hover:border-pink-500 cursor-pointer">${s}</button>`).join('');
                 let colorsHTML = p.colors.map(c => `<button type="button" onclick="selectColor(${index}, '${c}')" id="color-${index}-${c}" class="color-btn-${index} text-xs border border-slate-700 px-3 py-1.5 rounded-lg text-slate-300 transition hover:border-pink-500 cursor-pointer">${c}</button>`).join('');
@@ -462,7 +518,10 @@
                     <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-3">
                         ${imageHTML}
                         <div class="flex justify-between items-start">
-                            <h4 class="font-bold text-white text-base">${p.name}</h4>
+                            <div>
+                                <span class="bg-pink-950 text-pink-400 text-[10px] font-bold px-2 py-0.5 rounded-md border border-pink-500/30">${p.category || 'عام'}</span>
+                                <h4 class="font-bold text-white text-base mt-1">${p.name}</h4>
+                            </div>
                             <span class="text-pink-400 font-bold text-sm">${p.price} ج.م</span>
                         </div>
                         
@@ -696,13 +755,8 @@
             window.open(url, '_blank');
         }
 
-        function sendDirectMessage() {
-            let msg = document.getElementById('direct-msg').value.trim();
-            if(!msg) {
-                alert("من فضلك اكتب استفسارك أو رسالتك أولاً!");
-                return;
-            }
-            let fullText = `💬 استفسار عام من متجر Vanilla Store:\n\n${msg}`;
+        function requestLocation() {
+            let fullText = `📍 مرحباً، أريد معرفة عنوان وموقع Vanilla Store بالتفصيل أو إرسال لوكيشن الفرع لو سمحت.`;
             let phone = settings.whatsapp || "201000000000";
             let url = `https://wa.me/${phone}?text=${encodeURIComponent(fullText)}`;
             window.open(url, '_blank');
@@ -764,6 +818,7 @@
 
         function addNewProduct() {
             let name = document.getElementById('new-p-name').value.trim();
+            let category = document.getElementById('new-p-category').value.trim() || "مكياج";
             let price = parseFloat(document.getElementById('new-p-price').value);
             let sizesStr = document.getElementById('new-p-sizes').value.trim();
             let colorsStr = document.getElementById('new-p-colors').value.trim();
@@ -793,20 +848,21 @@
                         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                         let compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
                         
-                        saveNewProductObj(name, price, sizes, colors, compressedDataUrl);
+                        saveNewProductObj(name, category, price, sizes, colors, compressedDataUrl);
                     };
                     img.src = e.target.result;
                 };
                 reader.readAsDataURL(file);
             } else {
-                saveNewProductObj(name, price, sizes, colors, "https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=500");
+                saveNewProductObj(name, category, price, sizes, colors, "https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=500");
             }
         }
 
-        function saveNewProductObj(name, price, sizes, colors, image) {
+        function saveNewProductObj(name, category, price, sizes, colors, image) {
             let newProd = {
                 id: Date.now(),
                 name: name,
+                category: category,
                 price: price,
                 available: true,
                 sizes: sizes,
@@ -815,6 +871,7 @@
             };
             products.push(newProd);
             localStorage.setItem('vanilla_store_products', JSON.stringify(products));
+            renderCategories();
             renderProducts();
             renderAdminProducts();
             
@@ -881,7 +938,7 @@
                 container.innerHTML += `
                     <div class="bg-slate-900 border border-slate-800 p-3 rounded-xl space-y-3">
                         <div class="flex justify-between items-center">
-                            <span class="font-bold text-white text-sm">${p.name}</span>
+                            <span class="font-bold text-white text-sm">${p.name} <span class="text-xs text-pink-400">(${p.category || 'عام'})</span></span>
                             <button type="button" onclick="toggleAvailability(${index})" class="text-xs px-2.5 py-1 rounded-lg cursor-pointer ${p.available ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'}">
                                 ${p.available ? 'متاح للبيع 🟢' : 'خلصان 🔴'}
                             </button>
@@ -954,6 +1011,7 @@
 
         renderHeader();
         renderBanner();
+        renderCategories();
         renderReviews();
         renderProducts();
         renderSocialLinks();
