@@ -3,37 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduFlow | الأكاديمية التعليمية الذكية (Cloud Sync)</title>
+    <title>EduCore Pro | المنصة التعليمية السحابية المتكاملة</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Firebase App & Firestore SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
     <style>
-        body { font-family: 'Cairo', sans-serif; background-color: #030712; color: #f3f4f6; }
-        .glass-card { background: rgba(17, 24, 39, 0.75); backdrop-filter: blur(16px); border: 1px solid rgba(139, 92, 246, 0.15); }
-        .purple-glow { box-shadow: 0 0 30px rgba(139, 92, 246, 0.2); }
+        body { font-family: 'Cairo', sans-serif; background-color: #07090e; color: #f1f5f9; }
+        .glass-box { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(16px); border: 1px solid rgba(59, 130, 246, 0.2); }
+        .blue-glow { box-shadow: 0 0 35px rgba(59, 130, 246, 0.25); }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="min-h-screen pb-28 selection:bg-purple-600 selection:text-white">
+<body class="min-h-screen pb-28 selection:bg-blue-600 selection:text-white">
 
-    <!-- شريط الإعلانات -->
-    <div class="bg-gradient-to-r from-purple-700 via-indigo-700 to-blue-700 text-white text-[11px] font-bold py-2 px-4 text-center tracking-wider shadow-lg">
-        ⚡ منصة EduFlow التعليمية المتصلة سحابياً | ربط لحظي بين المدرس والطالب وولي الأمر 🎓
+    <!-- شريط الإعلانات العلوي -->
+    <div class="bg-gradient-to-r from-blue-700 via-indigo-700 to-sky-700 text-white text-[11px] font-bold py-2 px-4 text-center tracking-wider shadow-lg">
+        ☁️ منصة EduCore Pro السحابية | مزامنة لحظية بين الأستاذ، الطالب، وولي الأمر 🎓
     </div>
 
     <!-- الهيدر -->
-    <header class="glass-card border-b border-gray-800 p-4 sticky top-0 z-40">
+    <header class="glass-box border-b border-slate-800 p-4 sticky top-0 z-40">
         <div class="max-w-md mx-auto flex justify-between items-center">
-            <div onclick="handleLogoClick()" class="flex items-center gap-3 cursor-pointer select-none" title="اضغط 5 مرات لفتح لوحة الأستاذ">
-                <div class="w-12 h-12 bg-gradient-to-tr from-purple-600 to-indigo-600 rounded-2xl flex items-center justify-center font-black text-xl purple-glow text-white shadow-lg shadow-purple-600/30">
-                    ⚡
+            <div onclick="handleLogoClick()" class="flex items-center gap-3 cursor-pointer select-none" title="اضغط 5 مرات لفتح لوحة التحكم">
+                <div class="w-12 h-12 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center font-black text-xl blue-glow text-white shadow-lg shadow-blue-600/30">
+                    🎓
                 </div>
                 <div class="text-right">
-                    <h1 class="font-black text-base text-white tracking-wide">أكاديمية الفاهم 🏛️</h1>
-                    <p class="text-[10px] text-purple-400 font-semibold">Cloud Connected Ecosystem</p>
+                    <h1 class="font-black text-base text-white tracking-wide">أكاديمية المستقبل 🏛️</h1>
+                    <p class="text-[10px] text-blue-400 font-semibold">Cloud Real-time System</p>
                 </div>
             </div>
-            <button onclick="openPortalModal()" class="bg-gray-900 border border-gray-700 text-purple-400 text-xs px-3.5 py-2 rounded-xl font-bold flex items-center gap-1.5 cursor-pointer hover:bg-gray-800">
+            <button onclick="openAdminLogin()" class="bg-slate-900 border border-slate-700 text-blue-400 text-xs px-3.5 py-2 rounded-xl font-bold flex items-center gap-1.5 cursor-pointer hover:bg-slate-800">
                 🔐 بوابة الأستاذ
             </button>
         </div>
@@ -43,278 +50,238 @@
     <main class="max-w-md mx-auto p-4 space-y-5">
         
         <!-- بانر الترحيب -->
-        <div class="glass-card p-5 rounded-3xl purple-glow text-center space-y-2 border border-purple-500/30">
-            <span class="bg-purple-600/20 text-purple-300 text-[10px] font-extrabold px-3 py-1 rounded-full border border-purple-500/30 uppercase tracking-wider">النظام السحابي الموحد</span>
-            <h2 class="font-black text-lg text-white">تواصل لحظي بين ولي الأمر والمدرس</h2>
-            <p class="text-xs text-gray-400">سجل بياناتك كطالب أو تابع تقارير ابنك مباشرة عبر السحابة.</p>
+        <div class="glass-box p-5 rounded-3xl blue-glow text-center space-y-2 border border-blue-500/30">
+            <span class="bg-blue-600/20 text-blue-300 text-[10px] font-extrabold px-3 py-1 rounded-full border border-blue-500/30 uppercase tracking-wider">الربط السحابي المباشر</span>
+            <h2 class="font-black text-lg text-white">منظومة تعليمية متكاملة ومستدامة</h2>
+            <p class="text-xs text-slate-400">تابع المحاضرات، سجل بياناتك، واطمئن على مستوى ابنك في نفس اللحظة.</p>
         </div>
 
-        <!-- أزرار التنقل -->
-        <div class="grid grid-cols-3 gap-2">
-            <button onclick="switchTab('lectures')" id="btn-lectures" class="bg-purple-600 text-white text-xs py-3 rounded-2xl font-bold cursor-pointer shadow-lg text-center">📚 المحاضرات</button>
-            <button onclick="switchTab('quiz')" id="btn-quiz" class="bg-gray-900 border border-gray-800 text-gray-300 text-xs py-3 rounded-2xl font-bold cursor-pointer text-center">⚡ اختبارات</button>
-            <button onclick="switchTab('parent')" id="btn-parent" class="bg-gray-900 border border-gray-800 text-gray-300 text-xs py-3 rounded-2xl font-bold cursor-pointer text-center">👨‍👩‍👦 متابعة ولي الأمر</button>
+        <!-- أزرار التبويب -->
+        <div class="grid grid-cols-2 gap-2">
+            <button onclick="switchTab('student')" id="btn-student" class="bg-blue-600 text-white text-xs py-3 rounded-2xl font-bold cursor-pointer shadow-lg text-center">👨‍🎓 بوابة الطالب والحجوزات</button>
+            <button onclick="switchTab('parent')" id="btn-parent" class="bg-slate-900 border border-slate-800 text-slate-300 text-xs py-3 rounded-2xl font-bold cursor-pointer text-center">👨‍👩‍👦 متابعة ولي الأمر السحابية</button>
         </div>
 
-        <!-- قسم المحاضرات -->
-        <div id="section-lectures" class="space-y-4">
-            <div>
-                <h3 class="font-bold text-xs text-gray-400 uppercase tracking-wider mb-2">📂 الصفوف الدراسية</h3>
-                <div id="grades-bar" class="flex gap-2 overflow-x-auto no-scrollbar pb-1"></div>
-            </div>
-            <div id="lectures-container" class="space-y-3"></div>
-        </div>
-
-        <!-- قسم الاختبارات التفاعلية -->
-        <div id="section-quiz" class="glass-card p-5 rounded-3xl space-y-4 hidden border border-purple-500/30">
-            <h3 class="font-bold text-sm text-purple-400">⚡ تحدي المعرفة السريع</h3>
-            <div id="quiz-box" class="space-y-3 text-xs">
-                <p class="text-gray-300 font-semibold">سؤال: ما هي وحدة قياس القوة الكهربائية في النظام الدولي؟</p>
-                <div class="space-y-2">
-                    <button onclick="answerQuiz(false)" class="w-full bg-gray-900 border border-gray-800 p-3 rounded-xl text-right cursor-pointer">أ) الفولت (Volt)</button>
-                    <button onclick="answerQuiz(true)" class="w-full bg-gray-900 border border-gray-800 p-3 rounded-xl text-right cursor-pointer">ب) نيوتن (Newton)</button>
-                </div>
-                <p id="quiz-result" class="text-center font-bold mt-2 text-sm"></p>
-            </div>
-        </div>
-
-        <!-- قسم متابعة ولي الأمر (متصل سحابياً) -->
-        <div id="section-parent" class="glass-card p-5 rounded-3xl space-y-3 hidden">
-            <h3 class="font-bold text-sm text-purple-400">👨‍👩‍👦 بوابـة متابعة ولي الأمر السحابية</h3>
-            <p class="text-xs text-gray-400">ابحث برقم هاتفك المسجل لمعرفة تقارير وحالة الطالب الحية:</p>
-            <div class="flex gap-2">
-                <input type="text" id="parent-search-phone" placeholder="أدخل رقم ولي الأمر..." class="flex-1 bg-gray-900 border border-gray-800 rounded-xl p-3 text-xs text-white">
-                <button onclick="searchStudentRecord()" class="bg-purple-600 text-white px-4 py-3 rounded-xl text-xs font-bold cursor-pointer">بحث 🔍</button>
-            </div>
-            <div id="parent-report-result" class="space-y-2 pt-2 text-xs"></div>
-        </div>
-
-        <!-- استمارة تسجيل الطالب الجديدة -->
-        <div class="glass-card p-5 rounded-3xl space-y-3.5 shadow-xl mt-6 border border-purple-500/20">
-            <h4 class="font-bold text-sm text-white flex items-center gap-1.5">📝 استمارة الانضمام السحابية للأكاديمية:</h4>
+        <!-- قسم الطالب (التسجيل والحجز) -->
+        <div id="section-student" class="glass-box p-5 rounded-3xl space-y-3.5 shadow-xl border border-blue-500/20">
+            <h4 class="font-bold text-sm text-white flex items-center gap-1.5">📝 تسجيل بيانات الطالب وسحب الحصة:</h4>
             
-            <input type="text" id="student-name" placeholder="اسم الطالب الثلاثي..." class="w-full bg-gray-900 border border-gray-800 rounded-2xl p-3.5 text-xs text-white">
-            <input type="text" id="parent-phone" placeholder="رقم هاتف ولي الأمر (للمتابعة)..." class="w-full bg-gray-900 border border-gray-800 rounded-2xl p-3.5 text-xs text-white">
+            <input type="text" id="std-name" placeholder="اسم الطالب الثلاثي..." class="w-full bg-slate-900 border border-slate-800 rounded-2xl p-3.5 text-xs text-white focus:outline-none focus:border-blue-500">
+            <input type="text" id="std-parent-phone" placeholder="رقم هاتف ولي الأمر (للمتابعة)..." class="w-full bg-slate-900 border border-slate-800 rounded-2xl p-3.5 text-xs text-white focus:outline-none focus:border-blue-500">
             
-            <select id="student-year" class="w-full bg-gray-900 border border-gray-800 rounded-2xl p-3.5 text-xs text-gray-300">
+            <select id="std-grade" class="w-full bg-slate-900 border border-slate-800 rounded-2xl p-3.5 text-xs text-slate-300 focus:outline-none focus:border-blue-500">
                 <option value="الصف الأول الثانوي">الصف الأول الثانوي</option>
                 <option value="الصف الثاني الثانوي">الصف الثاني الثانوي</option>
                 <option value="الصف الثالث الثانوي">الصف الثالث الثانوي</option>
             </select>
 
-            <button onclick="registerStudentCloud()" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-black py-4 rounded-2xl transition shadow-xl cursor-pointer text-sm">
-                ☁️ تسجيل الطالب وإرسال البيانات سحابياً 🚀
+            <button onclick="registerStudentToCloud()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black py-4 rounded-2xl transition shadow-xl cursor-pointer text-sm">
+                ☁️ حفظ البيانات في السحابة وإرسالها للأستاذ 🚀
             </button>
+        </div>
+
+        <!-- قسم ولي الأمر (بحث سحابي حي) -->
+        <div id="section-parent" class="glass-box p-5 rounded-3xl space-y-3 hidden">
+            <h3 class="font-bold text-sm text-blue-400">👨‍👩‍👦 استعلام ولي الأمر اللحظي</h3>
+            <p class="text-xs text-slate-400">أدخل رقم هاتفك المسجل لعرض تقارير الطالب وحالة الحضور:</p>
+            <div class="flex gap-2">
+                <input type="text" id="search-phone" placeholder="رقم هاتف ولي الأمر..." class="flex-1 bg-slate-900 border border-slate-800 rounded-xl p-3 text-xs text-white">
+                <button onclick="parentSearchCloud()" class="bg-blue-600 text-white px-4 py-3 rounded-xl text-xs font-bold cursor-pointer">بحث 🔍</button>
+            </div>
+            <div id="parent-search-result" class="space-y-2 pt-2 text-xs"></div>
         </div>
 
     </main>
 
-    <!-- لوحة تحكم الأستاذ (سحابية بالكامل) -->
-    <div id="teacher-portal" class="fixed inset-0 bg-gray-950 hidden z-50 overflow-y-auto p-4">
+    <!-- لوحة تحكم الأستاذ (سحابية) -->
+    <div id="admin-dashboard" class="fixed inset-0 bg-slate-950 hidden z-50 overflow-y-auto p-4">
         <div class="max-w-md mx-auto space-y-4 py-6">
-            <div class="flex justify-between items-center border-b border-gray-800 pb-3">
-                <h3 class="font-black text-base text-purple-400">🔐 لوحة تحكم الأستاذ (Cloud Sync Dashboard)</h3>
-                <button onclick="closeTeacherPortal()" class="bg-gray-900 px-3.5 py-2 rounded-xl text-xs text-white cursor-pointer font-bold border border-gray-800">إغلاق ✕</button>
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h3 class="font-black text-base text-blue-400">🔐 لوحة تحكم الأستاذ (Cloud Real-time)</h3>
+                <button onclick="closeAdminDashboard()" class="bg-slate-900 px-3.5 py-2 rounded-xl text-xs text-white cursor-pointer font-bold border border-slate-800">إغلاق ✕</button>
             </div>
 
-            <!-- إعدادات واتساب -->
-            <div class="glass-card p-4 rounded-2xl space-y-3">
+            <div class="glass-box p-4 rounded-2xl space-y-3">
                 <h4 class="font-bold text-white text-xs">⚙ رقم واتساب الأستاذ للتواصل:</h4>
-                <input type="text" id="setting-whatsapp" placeholder="201000000000..." class="w-full bg-gray-900 border border-gray-800 rounded-xl px-3 py-2 text-xs text-white">
-                <button onclick="saveSettings()" class="w-full bg-purple-600 text-white text-xs py-2.5 rounded-xl font-bold cursor-pointer">حفظ الرقم 💾</button>
+                <input type="text" id="admin-whatsapp" placeholder="201000000000..." class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white">
+                <button onclick="saveAdminSettings()" class="w-full bg-blue-600 text-white text-xs py-2.5 rounded-xl font-bold cursor-pointer">حفظ الإعدادات 💾</button>
             </div>
 
-            <!-- سجل طلاب السحابة الحية -->
             <div class="space-y-2 pt-2">
-                <h4 class="font-bold text-gray-300 text-xs">📋 سجل الطلاب المسجلين سحابياً:</h4>
-                <div id="admin-students-list" class="space-y-2"></div>
+                <h4 class="font-bold text-slate-300 text-xs">📋 جميع الطلاب المسجلين سحابياً (تحديث فوري):</h4>
+                <div id="cloud-students-list" class="space-y-2"></div>
             </div>
         </div>
     </div>
 
-    <!-- نافذة إدخال كلمة سر الأستاذ -->
-    <div id="pin-modal" class="fixed inset-0 bg-black/85 backdrop-blur-sm hidden z-60 flex items-center justify-center p-4">
-        <div class="glass-card w-full max-w-sm p-6 rounded-3xl space-y-4">
+    <!-- نافذة سرية للأستاذ -->
+    <div id="admin-pin-modal" class="fixed inset-0 bg-black/85 backdrop-blur-sm hidden z-60 flex items-center justify-center p-4">
+        <div class="glass-box w-full max-w-sm p-6 rounded-3xl space-y-4">
             <h3 class="font-black text-base text-white">🔐 أدخل الرقم السري للوحة الأستاذ</h3>
-            <input type="password" id="admin-pin" placeholder="••••" class="w-full bg-gray-900 border border-gray-800 rounded-2xl p-3.5 text-center text-white tracking-widest text-lg">
+            <input type="password" id="pin-input" placeholder="••••" class="w-full bg-slate-900 border border-slate-800 rounded-2xl p-3.5 text-center text-white tracking-widest text-lg">
             <div class="flex gap-2">
-                <button onclick="verifyPin()" class="flex-1 bg-purple-600 text-white py-3 rounded-xl font-bold cursor-pointer">دخول</button>
-                <button onclick="document.getElementById('pin-modal').classList.add('hidden')" class="flex-1 bg-gray-800 text-gray-300 py-3 rounded-xl cursor-pointer">إلغاء</button>
+                <button onclick="verifyAdminPin()" class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold cursor-pointer">دخول</button>
+                <button onclick="document.getElementById('admin-pin-modal').classList.add('hidden')" class="flex-1 bg-slate-800 text-slate-300 py-3 rounded-xl cursor-pointer">إلغاء</button>
             </div>
         </div>
     </div>
 
-    <!-- سكربت المحاكاة السحابية المتقدمة لضمان الربط الفوري بين الهواتف -->
+    <!-- الكود البرمجي لربط السحابة عبر Firebase -->
     <script>
-        // نظام مزامنة سحابية يعتمد على LocalStorage المشترك بين الأجهزة المتصلة بنفس الشبكة/الرابط
-        function getCloudData(key) {
-            return JSON.parse(localStorage.getItem('eduflow_cloud_' + key) || '[]');
+        // ⚡ ضع بيانات مشروعك من Firebase هنا لتفعيل الربط الحقيقي بين الأجهزة السحابية:
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // تهيئة الفايربيس
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
         }
-        function setCloudData(key, data) {
-            localStorage.setItem('eduflow_cloud_' + key, JSON.stringify(data));
-        }
+        const db = firebase.firestore();
 
-        let defaultLectures = [
-            { id: 1, title: "المحاضرة التمهيدية وأساسيات المنهج", grade: "الصف الأول الثانوي", link: "#" },
-            { id: 2, title: "شرح قوانين نيوتن وتطبيقاتها", grade: "الصف الثاني الثانوي", link: "#" },
-            { id: 3, title: "المراجعة النهائية الشاملة للباب الأول", grade: "الصف الثالث الثانوي", link: "#" }
-        ];
-
-        let lectures = getCloudData('lectures').length ? getCloudData('lectures') : defaultLectures;
-        let settings = JSON.parse(localStorage.getItem('eduflow_settings') || '{"whatsapp":"201000000000"}');
-        let currentGrade = "الكل";
-        let correctPin = "1234";
-
-        // تحديث البيانات تلقائياً عبر الأجهزة لو فتحوا نفس الرابط
-        window.addEventListener('storage', function(e) {
-            if(e.key && e.key.startsWith('eduflow_cloud_')) {
-                renderLectures();
-                if(!document.getElementById('teacher-portal').classList.contains('hidden')) {
-                    renderAdminStudents();
-                }
-            }
-        });
+        let adminWhatsApp = localStorage.getItem('educore_whatsapp') || "201000000000";
 
         let logoClicks = 0;
         function handleLogoClick() {
             logoClicks++;
-            if(logoClicks === 5) { logoClicks = 0; document.getElementById('pin-modal').classList.add('hidden'); document.getElementById('pin-modal').classList.remove('hidden'); }
+            if(logoClicks === 5) {
+                logoClicks = 0;
+                document.getElementById('admin-pin-modal').classList.remove('hidden');
+            }
         }
 
-        function verifyPin() {
-            let pin = document.getElementById('admin-pin').value;
-            if(pin === correctPin) {
-                document.getElementById('pin-modal').classList.add('hidden');
-                document.getElementById('admin-pin').value = "";
-                document.getElementById('teacher-portal').classList.remove('hidden');
-                document.getElementById('setting-whatsapp').value = settings.whatsapp;
-                renderAdminStudents();
-            } else { alert("الرقم السري خطأ!"); }
+        function verifyAdminPin() {
+            let pin = document.getElementById('pin-input').value;
+            if(pin === "1234") {
+                document.getElementById('admin-pin-modal').classList.add('hidden');
+                document.getElementById('pin-input').value = "";
+                document.getElementById('admin-dashboard').classList.remove('hidden');
+                document.getElementById('admin-whatsapp').value = adminWhatsApp;
+                loadCloudStudentsRealtime();
+            } else {
+                alert("الرقم السري خاطئ!");
+            }
         }
 
-        function closeTeacherPortal() { document.getElementById('teacher-portal').classList.add('hidden'); }
+        function closeAdminDashboard() { document.getElementById('admin-dashboard').classList.add('hidden'); }
 
         function switchTab(tab) {
-            let lSec = document.getElementById('section-lectures');
-            let qSec = document.getElementById('section-quiz');
+            let sSec = document.getElementById('section-student');
             let pSec = document.getElementById('section-parent');
-            let bL = document.getElementById('btn-lectures');
-            let bQ = document.getElementById('btn-quiz');
+            let bS = document.getElementById('btn-student');
             let bP = document.getElementById('btn-parent');
 
-            lSec.classList.add('hidden'); qSec.classList.add('hidden'); pSec.classList.add('hidden');
-            bL.className = bQ.className = bP.className = "bg-gray-900 border border-gray-800 text-gray-300 text-xs py-3 rounded-2xl font-bold cursor-pointer text-center";
+            sSec.classList.add('hidden'); pSec.classList.add('hidden');
+            bS.className = bP.className = "bg-slate-900 border border-slate-800 text-slate-300 text-xs py-3 rounded-2xl font-bold cursor-pointer text-center";
 
-            if(tab === 'lectures') { lSec.classList.remove('hidden'); bL.className = "bg-purple-600 text-white text-xs py-3 rounded-2xl font-bold cursor-pointer shadow-lg text-center"; }
-            else if(tab === 'quiz') { qSec.classList.remove('hidden'); bQ.className = "bg-purple-600 text-white text-xs py-3 rounded-2xl font-bold cursor-pointer shadow-lg text-center"; }
-            else { pSec.classList.remove('hidden'); bP.className = "bg-purple-600 text-white text-xs py-3 rounded-2xl font-bold cursor-pointer shadow-lg text-center"; }
+            if(tab === 'student') {
+                sSec.classList.remove('hidden');
+                bS.className = "bg-blue-600 text-white text-xs py-3 rounded-2xl font-bold cursor-pointer shadow-lg text-center";
+            } else {
+                pSec.classList.remove('hidden');
+                bP.className = "bg-blue-600 text-white text-xs py-3 rounded-2xl font-bold cursor-pointer shadow-lg text-center";
+            }
         }
 
-        function answerQuiz(isCorrect) {
-            let res = document.getElementById('quiz-result');
-            res.className = isCorrect ? "text-center font-bold mt-2 text-sm text-emerald-400" : "text-center font-bold mt-2 text-sm text-red-400";
-            res.innerText = isCorrect ? "إجابة صحيحة برافو عليك! 🎉 +10 نقاط تفوق" : "إجابة خاطئة، حاول مرة أخرى! ❌";
-        }
+        // تسجيل الطالب وإرساله للسحابة فوراً (Firestore)
+        async function registerStudentToCloud() {
+            let name = document.getElementById('std-name').value.trim();
+            let parentPhone = document.getElementById('std-parent-phone').value.trim();
+            let grade = document.getElementById('std-grade').value;
 
-        function renderGrades() {
-            let bar = document.getElementById('grades-bar');
-            let grades = ["الكل", "الصف الأول الثانوي", "الصف الثاني الثانوي", "الصف الثالث الثانوي"];
-            bar.innerHTML = "";
-            grades.forEach(g => {
-                let active = currentGrade === g;
-                bar.innerHTML += `<button onclick="filterGrade('${g}')" class="text-xs px-4 py-2 rounded-xl cursor-pointer whitespace-nowrap ${active ? 'bg-purple-600 font-bold text-white shadow-md' : 'glass-card text-gray-300'}">${g}</button>`;
-            });
-        }
-
-        function filterGrade(g) { currentGrade = g; renderGrades(); renderLectures(); }
-
-        function renderLectures() {
-            let container = document.getElementById('lectures-container');
-            container.innerHTML = "";
-            let data = getCloudData('lectures').length ? getCloudData('lectures') : defaultLectures;
-            let filtered = data.filter(l => currentGrade === "الكل" || l.grade === currentGrade);
-
-            filtered.forEach(l => {
-                container.innerHTML += `
-                    <div class="glass-card p-4 rounded-2xl flex justify-between items-center shadow-md">
-                        <div>
-                            <span class="text-[9px] bg-purple-950 text-purple-400 px-2 py-0.5 rounded font-bold">${l.grade}</span>
-                            <h4 class="font-bold text-white text-xs mt-1">${l.title}</h4>
-                        </div>
-                        <a href="${l.link}" target="_blank" class="bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition shadow">مشاهدة 🎥</a>
-                    </div>
-                `;
-            });
-        }
-
-        function registerStudentCloud() {
-            let name = document.getElementById('student-name').value.trim();
-            let parentPhone = document.getElementById('parent-phone').value.trim();
-            let year = document.getElementById('student-year').value;
-
-            if(!name || !parentPhone) { alert("من فضلك اكتب اسم الطالب ورقم ولي الأمر!"); return; }
-
-            let studentId = "#STU-" + Math.floor(1000 + Math.random() * 9000);
-            let data = { id: studentId, date: new Date().toLocaleString('ar-EG'), name, parentPhone, year, status: 'مسجل ومعتمد 🟢' };
-
-            let students = getCloudData('students');
-            students.unshift(data);
-            setCloudData('students', students);
-
-            let text = `🎓 تسجيل طالب جديد بالأكاديمية:\n📌 الكود: ${studentId}\n👤 الطالب: ${name}\n📞 ولي الأمر: ${parentPhone}\n📚 الصف: ${year}`;
-            window.open(`https://wa.me/${settings.whatsapp}?text=${encodeURIComponent(text)}`, '_blank');
-            alert("تم إرسال وحفظ بيانات الطالب سحابياً بنجاح! ☁️🚀");
-        }
-
-        function searchStudentRecord() {
-            let phone = document.getElementById('parent-search-phone').value.trim();
-            let resBox = document.getElementById('parent-report-result');
-            if(!phone) { alert("اكتب رقم هاتف ولي الأمر للبحث!"); return; }
-
-            let students = getCloudData('students');
-            let found = students.filter(s => s.parentPhone === phone);
-
-            if(found.length === 0) {
-                resBox.innerHTML = `<p class="text-red-400 text-center py-2">لا توجد بيانات مسجلة بهذا الرقم حالياً.</p>`;
+            if(!name || !parentPhone) {
+                alert("من فضلك أدخل اسم الطالب ورقم ولي الأمر!");
                 return;
             }
 
-            resBox.innerHTML = "";
-            found.forEach(s => {
-                resBox.innerHTML += `
-                    <div class="glass-card p-3 rounded-xl space-y-1 border border-purple-500/30">
-                        <p class="text-white font-bold">👤 الطالب: ${s.name} (${s.id})</p>
-                        <p class="text-gray-300">📚 الصف: ${s.year}</p>
-                        <p class="text-emerald-400 font-bold">الحالة: ${s.status} | تاريخ التسجيل: ${s.date}</p>
-                    </div>
-                `;
+            let studentId = "STU-" + Math.floor(1000 + Math.random() * 9000);
+            
+            try {
+                // حفظ البيانات في قاعدة بيانات فايربيس السحابية
+                await db.collection("students").add({
+                    studentId: studentId,
+                    name: name,
+                    parentPhone: parentPhone,
+                    grade: grade,
+                    status: 'مسجل ومعتمد 🟢',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                let text = `🎓 تسجيل طالب جديد بالأكاديمية:\n📌 الكود: ${studentId}\n👤 الطالب: ${name}\n📞 هاتف ولي الأمر: ${parentPhone}\n📚 الصف: ${grade}`;
+                window.open(`https://wa.me/${adminWhatsApp}?text=${encodeURIComponent(text)}`, '_blank');
+                
+                alert("تم تسجيل الطالب وحفظ البيانات سحابياً بنجاح! ☁️🚀");
+                document.getElementById('std-name').value = "";
+                document.getElementById('std-parent-phone').value = "";
+            } catch (error) {
+                alert("حدث خطأ أثناء الاتصال بالسحابة: " + error.message);
+            }
+        }
+
+        // بحث ولي الأمر سحابياً برقم الهاتف
+        async function parentSearchCloud() {
+            let phone = document.getElementById('search-phone').value.trim();
+            let resultBox = document.getElementById('parent-search-result');
+            if(!phone) { alert("أدخل رقم هاتف ولي الأمر أولاً!"); return; }
+
+            resultBox.innerHTML = `<p class="text-slate-400 text-center">جاري البحث في السحابة.. 🔍</p>`;
+
+            try {
+                let snapshot = await db.collection("students").where("parentPhone", "==", phone).get();
+                if(snapshot.empty) {
+                    resultBox.innerHTML = `<p class="text-red-400 text-center py-2">لا توجد بيانات مسجلة لهذا الرقم في السحابة حالياً.</p>`;
+                    return;
+                }
+
+                resultBox.innerHTML = "";
+                snapshot.forEach(doc => {
+                    let data = doc.data();
+                    resultBox.innerHTML += `
+                        <div class="glass-box p-3 rounded-xl space-y-1 border border-blue-500/30">
+                            <p class="text-white font-bold">👤 الطالب: ${data.name} (${data.studentId})</p>
+                            <p class="text-slate-300">📚 الصف: ${data.grade}</p>
+                            <p class="text-emerald-400 font-bold">الحالة: ${data.status}</p>
+                        </div>
+                    `;
+                });
+            } catch (error) {
+                resultBox.innerHTML = `<p class="text-red-400 text-center">خطأ في جلب البيانات.</p>`;
+            }
+        }
+
+        // مراقبة أوبن ريل-تايم لتحديث لوحة تحكم المدرس فوراً
+        function loadCloudStudentsRealtime() {
+            let list = document.getElementById('cloud-students-list');
+            db.collection("students").orderBy("createdAt", "desc").onSnapshot(snapshot => {
+                if(snapshot.empty) {
+                    list.innerHTML = `<p class="text-xs text-slate-500 text-center py-3">لا توجد سجلات سحابية حالياً..</p>`;
+                    return;
+                }
+                list.innerHTML = "";
+                snapshot.forEach(doc => {
+                    let s = doc.data();
+                    list.innerHTML += `
+                        <div class="glass-box p-3 rounded-xl text-xs space-y-1 border border-blue-500/30">
+                            <div class="flex justify-between font-bold text-blue-400"><span>${s.studentId} - ${s.name}</span><span>${s.grade}</span></div>
+                            <p class="text-slate-300">ولي الأمر: ${s.parentPhone}</p>
+                        </div>
+                    `;
+                });
             });
         }
 
-        function renderAdminStudents() {
-            let list = document.getElementById('admin-students-list');
-            let students = getCloudData('students');
-            if(students.length === 0) { list.innerHTML = `<p class="text-xs text-gray-500 text-center py-3">لا توجد سجلات سحابية بعد..</p>`; return; }
-            list.innerHTML = "";
-            students.forEach((s, idx) => {
-                list.innerHTML += `
-                    <div class="glass-card p-3 rounded-xl text-xs space-y-1">
-                        <div class="flex justify-between font-bold text-purple-400"><span>${s.id} - ${s.name}</span><span>${s.year}</span></div>
-                        <p class="text-gray-300">ولي الأمر: ${s.parentPhone}</p>
-                    </div>
-                `;
-            });
-        }
-
-        function saveSettings() {
-            settings.whatsapp = document.getElementById('setting-whatsapp').value.trim();
-            localStorage.setItem('eduflow_settings', JSON.stringify(settings));
+        function saveAdminSettings() {
+            adminWhatsApp = document.getElementById('admin-whatsapp').value.trim();
+            localStorage.setItem('educore_whatsapp', adminWhatsApp);
             alert("تم حفظ رقم الأستاذ بنجاح! 💾");
         }
-
-        renderGrades();
-        renderLectures();
     </script>
 </body>
 </html>
+
 
