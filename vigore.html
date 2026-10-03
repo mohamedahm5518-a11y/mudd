@@ -64,7 +64,7 @@
             <input type="text" id="cust-name" placeholder="اسمك الكريم..." class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-blue-500">
             <input type="text" id="cust-address" placeholder="العنوان بالتفصيل (المحافظة والمنطقة)..." class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-blue-500">
             
-            <!-- أزرار اختيار طريقة دفع العربون (إلزامي) -->
+            <!-- أزرار اختيار طريقة دفع العربون -->
             <div class="space-y-2 pt-1">
                 <label class="text-xs text-slate-400 block">اختر طريقة دفع العربون لتأكيد الأوردر:</label>
                 <div class="grid grid-cols-2 gap-2">
@@ -97,7 +97,7 @@
                 </div>
             </div>
 
-            <!-- رفع إثبات التحويل (سكرين شوت) -->
+            <!-- رفع إثبات التحويل -->
             <div class="space-y-1 pt-1">
                 <label class="text-xs text-slate-400 block">📸 ارفع سكرين شوت إثبات تحويل العربون:</label>
                 <input type="file" id="transfer-proof" accept="image/*" class="w-full text-xs text-slate-400 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-blue-400 hover:file:bg-slate-700 cursor-pointer border border-slate-700 rounded-xl bg-slate-800">
@@ -128,7 +128,7 @@
         </div>
     </div>
 
-    <!-- نافذة مراجعة الأوردرات المُرسلة (الجديدة) -->
+    <!-- نافذة مراجعة الأوردرات المُرسلة -->
     <div id="orders-modal" class="fixed inset-0 bg-slate-950 hidden z-50 overflow-y-auto p-4">
         <div class="max-w-md mx-auto space-y-4 py-6">
             <div class="flex justify-between items-center border-b border-slate-800 pb-3">
@@ -144,7 +144,7 @@
     <div id="admin-panel" class="fixed inset-0 bg-slate-950 hidden z-50 overflow-y-auto p-4">
         <div class="max-w-md mx-auto space-y-4 py-6">
             <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-                <h3 class="font-bold text-lg text-blue-400">⚙️️ لوحة تعديل Vigor</h3>
+                <h3 class="font-bold text-lg text-blue-400">⚙ لوحة تعديل Vigor</h3>
                 <button onclick="closeAdminPanel()" class="bg-slate-800 px-3 py-1.5 rounded-lg text-xs text-white cursor-pointer">إلغاء ✕</button>
             </div>
 
@@ -611,7 +611,6 @@
                 total: cart.reduce((sum, i) => sum + (i.price * i.qty), 0)
             };
 
-            // حفظ الأوردر في الـ localStorage لمراجعته في لوحة التحكم
             let savedOrders = JSON.parse(localStorage.getItem('tapio_vigor_saved_orders') || '[]');
             savedOrders.unshift(orderDetails);
             localStorage.setItem('tapio_vigor_saved_orders', JSON.stringify(savedOrders));
