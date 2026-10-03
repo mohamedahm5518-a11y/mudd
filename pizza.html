@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bellissimo | Italian Cafe & Pizzeria</title>
+    <title>Bellissimo | Italian Cafe & Pizzeria - Dine-In Engine</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
@@ -19,23 +19,26 @@
 
     <!-- شريط الإعلانات العلوي -->
     <div class="bg-gradient-to-r from-amber-700 via-yellow-600 to-amber-800 text-white text-[11px] font-bold py-1.5 px-4 text-center tracking-wider shadow-md">
-        🍕 أصل السعادة الإيطالية | بيتزا نابوليتان وأسبريسو فاخر ☕
+        🍕 أهلاً بكم في مطعم وكافيه Bellissimo | تجربة ضيافة إيطالية ذكية على طاولتك ☕
     </div>
 
     <!-- الهيدر -->
     <header class="italian-card border-b border-stone-800/80 p-4 sticky top-0 z-40">
         <div class="max-w-md mx-auto flex justify-between items-center">
             <div onclick="handleLogoClick()" class="flex items-center gap-3 cursor-pointer select-none" title="اضغط 5 مرات لفتح الإدارة">
-                <div id="header-logo-wrapper" class="w-12 h-12 bg-gradient-to-tr from-amber-600 to-yellow-500 rounded-2xl flex items-center justify-center font-black text-xl amber-glow text-white overflow-hidden shadow-lg shadow-amber-600/30">
+                <div class="w-12 h-12 bg-gradient-to-tr from-amber-600 to-yellow-500 rounded-2xl flex items-center justify-center font-black text-xl amber-glow text-white overflow-hidden shadow-lg shadow-amber-600/30">
                     B
                 </div>
                 <div class="text-right">
                     <h1 class="font-black text-base text-white tracking-wide">BELLISSIMO 🇮🇹</h1>
-                    <p class="text-[10px] text-amber-400 font-semibold">Italian Cafe & Pizzeria</p>
+                    <p class="text-[10px] text-amber-400 font-semibold">Smart Dine-In Experience</p>
                 </div>
             </div>
             <div class="flex items-center gap-2">
-                <span id="header-cart-badge" class="bg-amber-600/20 border border-amber-500/40 text-amber-400 text-xs px-3 py-1.5 rounded-xl font-bold flex items-center gap-1.5">
+                <button type="button" onclick="openStaffKitchenModal()" class="bg-stone-900 border border-stone-700 text-amber-400 text-xs px-3 py-2 rounded-xl font-bold flex items-center gap-1.5 cursor-pointer hover:bg-stone-800">
+                    👨‍🍳 شاشة المطبخ
+                </button>
+                <span class="bg-amber-600/20 border border-amber-500/40 text-amber-400 text-xs px-3 py-1.5 rounded-xl font-bold flex items-center gap-1.5">
                     🛒 <span id="top-cart-count">0</span>
                 </span>
             </div>
@@ -81,72 +84,35 @@
             </div>
         </div>
 
-        <!-- بيانات العميل ونوع الطلب والعربون -->
+        <!-- بيانات العميل وطلب الصالة -->
         <div class="italian-card p-5 rounded-3xl amber-border space-y-3.5 shadow-xl">
-            <h4 class="font-bold text-sm text-white flex items-center gap-1.5">🛎️ بيانات وتأكيد الطلب:</h4>
+            <h4 class="font-bold text-sm text-white flex items-center gap-1.5">🪑 بيانات طلب الطاولة (صالة ذكية):</h4>
             
             <input type="text" id="cust-name" placeholder="اسمك الكريم..." class="w-full bg-stone-900/90 border border-stone-700/80 rounded-2xl p-3.5 text-sm text-white focus:outline-none focus:border-amber-500 transition">
+            <input type="text" id="table-number" placeholder="رقم الطاولة في الكافيه (مثال: Table 4)..." class="w-full bg-stone-900/90 border border-stone-700/80 rounded-2xl p-3.5 text-sm text-white focus:outline-none focus:border-amber-500 transition">
             
-            <!-- نوع الطلب (دليفري ولا طاولة في الكافيه) -->
-            <div class="space-y-1.5">
-                <label class="text-xs text-stone-400 block font-semibold">نوع الطلب:</label>
-                <div class="grid grid-cols-2 gap-2.5">
-                    <button type="button" onclick="setOrderType('delivery')" id="type-btn-delivery" class="order-type-btn text-xs bg-stone-900 text-stone-300 font-bold p-3 rounded-2xl border border-stone-800 transition cursor-pointer">🛵 دليفري (توصيل)</button>
-                    <button type="button" onclick="setOrderType('table')" id="type-btn-table" class="order-type-btn text-xs bg-stone-900 text-stone-300 font-bold p-3 rounded-2xl border border-stone-800 transition cursor-pointer">🪑 أكل داخل الكافيه (طاولة)</button>
-                </div>
-                <input type="hidden" id="order-type" value="delivery">
-            </div>
-
-            <div id="address-box">
-                <input type="text" id="cust-address" placeholder="العنوان بالتفصيل (المحافظة، المنطقة، الشارع)..." class="w-full bg-stone-900/90 border border-stone-700/80 rounded-2xl p-3.5 text-sm text-white focus:outline-none focus:border-amber-500 transition">
-            </div>
-
-            <div id="table-box" class="hidden">
-                <input type="text" id="table-number" placeholder="رقم الطاولة في الكافيه (مثال: Table 5)..." class="w-full bg-stone-900/90 border border-stone-700/80 rounded-2xl p-3.5 text-sm text-white focus:outline-none focus:border-amber-500 transition">
-            </div>
-
-            <!-- أزرار اختيار طريقة دفع العربون للدليفري -->
-            <div id="deposit-section" class="space-y-2 pt-1">
-                <label class="text-xs text-stone-400 block font-semibold">اختر طريقة دفع العربون للتأكيد:</label>
-                <div class="grid grid-cols-2 gap-2.5">
-                    <button type="button" onclick="setDepositMethod('instapay')" id="dep-btn-instapay" class="dep-option-btn text-xs bg-stone-900 text-stone-300 font-bold p-3 rounded-2xl border border-stone-800 transition cursor-pointer">📱 انستاباي</button>
-                    <button type="button" onclick="setDepositMethod('wallet')" id="dep-btn-wallet" class="dep-option-btn text-xs bg-stone-900 text-stone-300 font-bold p-3 rounded-2xl border border-stone-800 transition cursor-pointer">💳 محفظة إلكترونية</button>
-                </div>
-                <input type="hidden" id="deposit-method" value="">
-            </div>
-
-            <!-- صندوق انستاباي -->
-            <div id="dep-instapay-box" class="hidden bg-stone-950/90 border border-amber-500/30 p-3.5 rounded-2xl text-xs space-y-2 text-stone-300 text-center">
-                <p class="font-semibold text-amber-400">حول مبلغ العربون عبر InstaPay</p>
-                <button type="button" onclick="openInstapayLink()" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-2.5 rounded-xl transition cursor-pointer shadow-md shadow-amber-600/30">
-                    🔗 رابط انستاباي للتحويل الفوري
-                </button>
-            </div>
-
-            <!-- صندوق المحافظ -->
-            <div id="dep-wallet-box" class="hidden bg-stone-950/90 border border-amber-500/30 p-3.5 rounded-2xl text-xs space-y-2 text-stone-300">
-                <p class="font-semibold text-amber-400 text-center mb-1">اختر شبكة المحفظة للتحويل:</p>
-                <div class="grid grid-cols-2 gap-2">
-                    <button type="button" onclick="selectWalletNetwork('vodafone')" class="bg-red-950/70 border border-red-800/40 p-2.5 rounded-xl text-white font-bold transition cursor-pointer">🔴 فودافون كاش</button>
-                    <button type="button" onclick="selectWalletNetwork('orange')" class="bg-orange-950/70 border border-orange-800/40 p-2.5 rounded-xl text-white font-bold transition cursor-pointer">🟠 أورانج كاش</button>
-                    <button type="button" onclick="selectWalletNetwork('etisalat')" class="bg-emerald-950/70 border border-emerald-800/40 p-2.5 rounded-xl text-white font-bold transition cursor-pointer">🟢 اتصالات كاش</button>
-                    <button type="button" onclick="selectWalletNetwork('we')" class="bg-purple-950/70 border border-purple-800/40 p-2.5 rounded-xl text-white font-bold transition cursor-pointer">🟣 وي باي</button>
-                </div>
-                <div id="wallet-result-box" class="hidden mt-2 p-2.5 bg-stone-900 rounded-xl border border-stone-800 text-center space-y-1.5">
-                    <p id="wallet-number-display" class="font-bold text-amber-400 text-sm"></p>
-                    <button type="button" onclick="copyWalletNumber()" class="text-[11px] bg-stone-800 hover:bg-stone-700 text-amber-400 px-3 py-1.5 rounded-lg border border-amber-500/30 cursor-pointer font-bold">📋 نسخ رقم المحفظة</button>
-                </div>
-            </div>
-
-            <!-- رفع إثبات التحويل -->
-            <div id="proof-section" class="space-y-1.5 pt-1">
-                <label class="text-xs text-stone-300 block font-semibold">📸 ارفع سكرين شوت إثبات تحويل العربون:</label>
-                <input type="file" id="transfer-proof" accept="image/*" class="w-full text-xs text-stone-400 file:mr-2 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-amber-600 file:text-white hover:file:bg-amber-500 cursor-pointer border border-stone-700 rounded-2xl bg-stone-900">
-            </div>
-
             <button onclick="sendOrderDirectly()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black py-4 rounded-2xl transition shadow-xl shadow-emerald-900/40 flex items-center justify-center gap-2 cursor-pointer text-sm">
-                💬 إرسال الأوردر على الواتساب 🚀
+                💬 إرسال الأوردر للمطبخ على الواتساب 🚀
             </button>
+        </div>
+
+        <!-- تتبع حالة الطلب الحي للزبون (Live Progress) -->
+        <div id="live-tracking-box" class="italian-card p-5 rounded-3xl space-y-3 hidden shadow-xl border border-emerald-500/30">
+            <div class="flex justify-between items-center">
+                <h4 class="font-bold text-xs text-emerald-400">⚡ حالة طاولتك الآن في المطبخ:</h4>
+                <span id="track-order-id" class="text-[10px] text-stone-400 font-bold"></span>
+            </div>
+            <div class="space-y-2 text-xs">
+                <div id="step-1" class="flex items-center gap-2.5 text-stone-400 p-2.5 rounded-xl bg-stone-900/80 border border-stone-800">
+                    <span>🟢</span> <span>جاري تحضير المكونات الطازجة وعجن البيتزا...</span>
+                </div>
+                <div id="step-2" class="flex items-center gap-2.5 text-stone-400 p-2.5 rounded-xl bg-stone-900/80 border border-stone-800">
+                    <span>🔥</span> <span>دخلت الفرن الحجري النابوليتان الساخن...</span>
+                </div>
+                <div id="step-3" class="flex items-center gap-2.5 text-stone-400 p-2.5 rounded-xl bg-stone-900/80 border border-stone-800">
+                    <span>🚀</span> <span>الأوردر جاهز وفي طريقه لترابيزتك الآن!</span>
+                </div>
+            </div>
         </div>
 
         <!-- أزرار السوشيال ميديا -->
@@ -167,15 +133,37 @@
         </div>
     </div>
 
-    <!-- نافذة مراجعة الأوردرات المُرسلة -->
-    <div id="orders-modal" class="fixed inset-0 bg-stone-950 hidden z-60 overflow-y-auto p-4">
+    <!-- شاشة المطبخ والاستاف الذكية (Station Handoff) -->
+    <div id="staff-kitchen-modal" class="fixed inset-0 bg-stone-950 hidden z-60 overflow-y-auto p-4">
         <div class="max-w-md mx-auto space-y-4 py-6">
             <div class="flex justify-between items-center border-b border-stone-800 pb-3">
-                <h3 class="font-black text-lg text-amber-400">📦 قائمة الأوردرات المُرسلة للمراجعة</h3>
+                <div>
+                    <h3 class="font-black text-lg text-amber-400">👨‍🍳 شاشة المطبخ والبار (Staff Station)</h3>
+                    <p class="text-[10px] text-stone-400">إدارة الأوردرات وتحديث حالة التسليم أوتوماتيك</p>
+                </div>
+                <button onclick="closeStaffKitchenModal()" class="bg-stone-800 px-3.5 py-2 rounded-xl text-xs text-white cursor-pointer font-bold">إغلاق ✕</button>
+            </div>
+            
+            <div class="flex gap-2">
+                <button onclick="switchStaffTab('kitchen')" id="staff-tab-kitchen" class="flex-1 bg-amber-600 text-white text-xs py-2.5 rounded-xl font-bold cursor-pointer">🍕 أوردرات المطبخ</button>
+                <button onclick="switchStaffTab('bar')" id="staff-tab-bar" class="flex-1 bg-stone-900 text-stone-300 text-xs py-2.5 rounded-xl font-bold cursor-pointer border border-stone-800">☕ أوردرات البار</button>
+            </div>
+
+            <div id="staff-orders-container" class="space-y-3"></div>
+            
+            <button onclick="openOrdersModal()" class="w-full bg-stone-900 border border-stone-700 text-amber-400 py-3 rounded-2xl text-xs font-bold cursor-pointer">📂 سجل أوردرات الصالة الكاملة</button>
+        </div>
+    </div>
+
+    <!-- نافذة سجل الأوردرات الكاملة للإدارة -->
+    <div id="orders-modal" class="fixed inset-0 bg-stone-950 hidden z-70 overflow-y-auto p-4">
+        <div class="max-w-md mx-auto space-y-4 py-6">
+            <div class="flex justify-between items-center border-b border-stone-800 pb-3">
+                <h3 class="font-black text-lg text-amber-400">📦 سجل أوردرات الطرابيزات المُرسلة</h3>
                 <button onclick="closeOrdersModal()" class="bg-stone-800 px-3.5 py-2 rounded-xl text-xs text-white cursor-pointer font-bold">إغلاق ✕</button>
             </div>
             <div id="saved-orders-list" class="space-y-3"></div>
-            <button onclick="clearAllOrders()" class="w-full bg-red-950/60 border border-red-700/50 text-red-400 py-3 rounded-2xl text-xs font-bold cursor-pointer">🗑️ مسح سجل الأوردرات بالكامل</button>
+            <button onclick="clearAllOrders()" class="w-full bg-red-950/60 border border-red-700/50 text-red-400 py-3 rounded-2xl text-xs font-bold cursor-pointer">🗑️ مسح السجل بالكامل</button>
         </div>
     </div>
 
@@ -188,76 +176,43 @@
             </div>
 
             <div class="italian-card border border-emerald-500/40 p-4 rounded-2xl space-y-3 shadow-xl">
-                <h4 class="font-bold text-emerald-400 text-sm">📊 إحصائيات وأداء المنيو:</h4>
+                <h4 class="font-bold text-emerald-400 text-sm">📊 إحصائيات المنيو:</h4>
                 <div class="grid grid-cols-2 gap-2.5">
                     <div class="bg-stone-900/90 p-3 rounded-xl text-center border border-stone-800">
                         <span class="text-[10px] text-stone-400 block font-semibold">إجمالي الزيارات 👁️</span>
                         <span id="stat-visits" class="font-black text-white text-lg">0</span>
                     </div>
                     <div class="bg-stone-900/90 p-3 rounded-xl text-center border border-stone-800">
-                        <span class="text-[10px] text-stone-400 block font-semibold">الأوردرات المُرسلة 📦</span>
+                        <span class="text-[10px] text-stone-400 block font-semibold">أوردرات الصالة 🪑</span>
                         <span id="stat-orders" class="font-black text-amber-400 text-lg">0</span>
                     </div>
                 </div>
-                <button type="button" onclick="openOrdersModal()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl text-xs transition cursor-pointer shadow-lg shadow-emerald-900/40 flex items-center justify-center gap-2">
-                    📂 مراجعة تفاصيل الأوردرات وسكرين شوت التحويل
+                <button type="button" onclick="openStaffKitchenModal()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl text-xs transition cursor-pointer shadow-lg shadow-emerald-900/40 flex items-center justify-center gap-2">
+                    👨‍‍🍳 فتح شاشة الاستاف والمطبخ المباشرة
                 </button>
-            </div>
-
-            <!-- إعدادات شاشة العروض -->
-            <div class="italian-card border border-amber-500/40 p-4 rounded-2xl space-y-3 shadow-xl">
-                <h4 class="font-bold text-amber-400 text-sm">🔥 إعدادات شاشة العروض (البانر):</h4>
-                <div class="flex items-center justify-between bg-stone-900 p-3 rounded-xl border border-stone-800">
-                    <span class="text-xs text-stone-300 font-semibold">إظهار البانر الترويجي:</span>
-                    <input type="checkbox" id="setting-banner-show" class="w-4 h-4 accent-amber-600 cursor-pointer">
-                </div>
-                <div>
-                    <span class="text-xs text-stone-400 block mb-1 font-semibold">عنوان الشارة (Tag):</span>
-                    <input type="text" id="setting-banner-tag" class="w-full bg-stone-900 border border-stone-800 rounded-xl px-3 py-2.5 text-sm text-white">
-                </div>
-                <div>
-                    <span class="text-xs text-stone-400 block mb-1 font-semibold">عنوان العرض الرئيسي:</span>
-                    <input type="text" id="setting-banner-title" class="w-full bg-stone-900 border border-stone-800 rounded-xl px-3 py-2.5 text-sm text-white">
-                </div>
-                <div>
-                    <span class="text-xs text-stone-400 block mb-1 font-semibold">وصف العرض والخصم:</span>
-                    <input type="text" id="setting-banner-desc" class="w-full bg-stone-900 border border-stone-800 rounded-xl px-3 py-2.5 text-sm text-white">
-                </div>
-            </div>
-
-            <!-- تغيير الرقم السري -->
-            <div class="italian-card border border-stone-700 p-4 rounded-2xl space-y-3 shadow-xl">
-                <h4 class="font-bold text-amber-400 text-sm">🔒 تغيير باسورد لوحة التحكم:</h4>
-                <input type="text" id="setting-new-pin" placeholder="رقم سري جديد" class="w-full bg-stone-900 border border-stone-800 rounded-xl px-3 py-2.5 text-sm text-white">
-                <button type="button" onclick="saveNewPin()" class="w-full bg-amber-600 hover:bg-amber-500 text-white text-xs py-2.5 rounded-xl font-bold cursor-pointer">حفظ الباسورد 🔑</button>
             </div>
 
             <!-- إضافة صنف جديد للمنيو -->
             <div class="italian-card border border-amber-500/40 p-4 rounded-2xl space-y-3 shadow-xl">
-                <h4 class="font-bold text-amber-400 text-sm">➕ إضافة صنف جديد للمنيو:</h4>
-                <input type="text" id="new-p-name" placeholder="اسم الوجبة أو المشروب (مثال: بيتزا مارجريتا)" class="w-full bg-stone-900 border border-stone-800 rounded-xl px-3 py-2.5 text-sm text-white">
-                <input type="text" id="new-p-category" value="بيتزا 🍕" class="w-full bg-stone-900 border border-stone-800 rounded-xl px-3 py-2.5 text-sm text-white">
+                <h4 class="font-bold text-amber-400 text-sm">➕ إضافة صنف للمنيو:</h4>
+                <input type="text" id="new-p-name" placeholder="اسم الوجبة (مثال: بيتزا مارجريتا)" class="w-full bg-stone-900 border border-stone-800 rounded-xl px-3 py-2 text-sm text-white">
+                <input type="text" id="new-p-category" value="بيتزا 🍕" class="w-full bg-stone-900 border border-stone-800 rounded-xl px-3 py-2 text-sm text-white">
                 <div class="grid grid-cols-2 gap-2">
-                    <input type="number" id="new-p-price" placeholder="السعر (ج.م)" class="w-full bg-stone-900 border border-stone-800 rounded-xl px-2.5 py-2 text-sm text-white">
-                    <input type="text" id="new-p-sizes" value="وسط, كبير" class="w-full bg-stone-900 border border-stone-800 rounded-xl px-2.5 py-2 text-xs text-white">
+                    <input type="number" id="new-p-price" placeholder="السعر (ج.م)" class="w-full bg-stone-900 border border-stone-800 rounded-xl px-2 py-2 text-sm text-white">
+                    <input type="text" id="new-p-sizes" value="وسط, كبير" class="w-full bg-stone-900 border border-stone-800 rounded-xl px-2 py-2 text-xs text-white">
                 </div>
-                <input type="file" id="new-p-image" accept="image/*" class="w-full text-xs text-stone-400 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-stone-900 file:text-amber-400 hover:file:bg-stone-800 cursor-pointer border border-stone-800 rounded-xl">
-                <button type="button" onclick="addNewProduct()" class="w-full bg-amber-600 hover:bg-amber-500 text-white text-xs py-3 rounded-xl font-bold cursor-pointer shadow-lg shadow-amber-600/30">إضافة للمنيو 🚀</button>
+                <input type="file" id="new-p-image" accept="image/*" class="w-full text-xs text-stone-400 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-stone-900 file:text-amber-400 cursor-pointer border border-stone-800 rounded-xl">
+                <button type="button" onclick="addNewProduct()" class="w-full bg-amber-600 text-white text-xs py-3 rounded-xl font-bold cursor-pointer">إضافة للمنيو 🚀</button>
             </div>
 
-            <!-- إعدادات المحافظ وواتساب -->
+            <!-- إعدادات واتساب -->
             <div class="italian-card border border-stone-800 p-4 rounded-2xl space-y-3 shadow-xl">
-                <h4 class="font-bold text-white text-sm">💳 إعدادات الدفع وواتساب:</h4>
-                <input type="text" id="setting-whatsapp" placeholder="رقم الواتساب..." class="w-full bg-stone-900 border border-stone-800 rounded-xl px-3 py-2.5 text-sm text-white">
-                <input type="text" id="setting-instapay" placeholder="رابط انستاباي..." class="w-full bg-stone-900 border border-stone-800 rounded-xl px-3 py-2.5 text-sm text-white">
-                <div class="grid grid-cols-2 gap-2">
-                    <input type="text" id="setting-vodafone" placeholder="فودافون كاش" class="w-full bg-stone-900 border border-stone-800 rounded-xl px-2.5 py-2 text-xs text-white">
-                    <input type="text" id="setting-orange" placeholder="أورانج كاش" class="w-full bg-stone-900 border border-stone-800 rounded-xl px-2.5 py-2 text-xs text-white">
-                </div>
-                <button onclick="saveSettings()" class="w-full bg-amber-600 hover:bg-amber-500 text-white text-xs py-3 rounded-xl font-bold cursor-pointer mt-2 shadow-lg shadow-amber-600/30">حفظ كافة الإعدادات 💾</button>
+                <h4 class="font-bold text-white text-sm">⚙ إعدادات الواتساب:</h4>
+                <input type="text" id="setting-whatsapp" placeholder="رقم واتساب المطبخ..." class="w-full bg-stone-900 border border-stone-800 rounded-xl px-3 py-2 text-sm text-white">
+                <button onclick="saveSettings()" class="w-full bg-amber-600 text-white text-xs py-3 rounded-xl font-bold cursor-pointer mt-2">حفظ الإعدادات 💾</button>
             </div>
 
-            <p class="text-xs text-stone-400 pt-2 font-semibold">تعديل الأصناف والأسعار الحالية:</p>
+            <p class="text-xs text-stone-400 pt-2 font-semibold">تعديل الأصناف والأسعار:</p>
             <div id="admin-products-list" class="space-y-3"></div>
         </div>
     </div>
@@ -272,30 +227,26 @@
         localStorage.setItem('tapio_bellissimo_visits', visits);
 
         let defaultProducts = [
-            { id: 1, name: "بيتزا مارجريتا نابوليتان", price: 160, category: "بيتزا 🍕", available: true, sizes: ["وسط", "كبير"], colors: [], image: "https://images.unsplash.com/photo-1604382355076-af4b0eb60143?w=500" },
-            { id: 2, name: "باستا فوتوتشيني ألفريدو", price: 180, category: "باستا 🍝", available: true, sizes: ["عادي", "دبل"], colors: [], image: "https://images.unsplash.com/photo-1645112411341-6c4fd023714a?w=500" },
-            { id: 3, name: "قهوة إسبريسو إيطالي", price: 45, category: "كافيه ☕", available: true, sizes: ["سنجل", "دبل"], colors: [], image: "https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?w=500" },
-            { id: 4, name: "تيراميسو إيطالي أصلي", price: 95, category: "ديزيرت 🍰", available: true, sizes: ["قطعة"], colors: [], image: "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=500" }
+            { id: 1, name: "بيتزا مارجريتا نابوليتان", price: 160, category: "بيتزا 🍕", available: true, sizes: ["وسط", "كبير"], image: "https://images.unsplash.com/photo-1604382355076-af4b0eb60143?w=500" },
+            { id: 2, name: "باستا فوتوتشيني ألفريدو", price: 180, category: "باستا 🍝", available: true, sizes: ["عادي", "دبل"], image: "https://images.unsplash.com/photo-1645112411341-6c4fd023714a?w=500" },
+            { id: 3, name: "قهوة إسبريسو إيطالي", price: 45, category: "كافيه ☕", available: true, sizes: ["سنجل", "دبل"], image: "https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?w=500" },
+            { id: 4, name: "تيراميسو إيطالي أصلي", price: 95, category: "ديزيرت 🍰", available: true, sizes: ["قطعة"], image: "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=500" }
         ];
 
         let products = JSON.parse(localStorage.getItem('tapio_bellissimo_products')) || defaultProducts;
         let adminPin = localStorage.getItem('tapio_bellissimo_pin') || "1234";
         let settings = JSON.parse(localStorage.getItem('tapio_bellissimo_settings')) || {
-            logo: "",
-            instapay: "https://ipn.eg/",
-            vodafone: "01000000000",
-            orange: "01200000000",
             whatsapp: "201000000000",
             bannerShow: true,
-            bannerTag: "خصم خاص لعشاق القهوة والبيتزا",
-            bannerTitle: "🇮🇹 أجواء إيطالية أصيلة في كل قضمة",
-            bannerDesc: "اطلب أكلتك المفضلة الآن، ووصلها لحد باب بيتك أو استمتع بيها في الكافيه!"
+            bannerTag: "خدمة الصالة الذكية",
+            bannerTitle: "🇮🇹 استمتع بأكلتك الإيطالية على طاولتك فوراً",
+            bannerDesc: "اطلب بلمسة واحدة، وتابع طاهيك وهو يجهز أكلتك خصيصاً لك!"
         };
 
         let cart = [];
         let selectedSelections = {};
-        let activeWalletNum = "";
         let currentCategory = "الكل";
+        let currentStaffTab = "kitchen";
 
         let logoClicks = 0;
         let logoTimer = null;
@@ -307,38 +258,6 @@
             }
             clearTimeout(logoTimer);
             logoTimer = setTimeout(() => { logoClicks = 0; }, 2000);
-        }
-
-        function setOrderType(type) {
-            document.getElementById('order-type').value = type;
-            document.querySelectorAll('.order-type-btn').forEach(btn => {
-                btn.className = "order-type-btn text-xs bg-stone-900 text-stone-300 font-bold p-3 rounded-2xl border border-stone-800 transition cursor-pointer";
-            });
-            let activeBtn = document.getElementById(`type-btn-${type}`);
-            if(activeBtn) {
-                activeBtn.className = "order-type-btn text-xs bg-amber-600 text-white font-bold p-3 rounded-2xl border border-amber-500 transition cursor-pointer shadow-lg shadow-amber-600/40";
-            }
-
-            let addressBox = document.getElementById('address-box');
-            let tableBox = document.getElementById('table-box');
-            let depositSection = document.getElementById('deposit-section');
-            let proofSection = document.getElementById('proof-section');
-            let instapayBox = document.getElementById('dep-instapay-box');
-            let walletBox = document.getElementById('dep-wallet-box');
-
-            if(type === 'table') {
-                addressBox.classList.add('hidden');
-                tableBox.classList.remove('hidden');
-                depositSection.classList.add('hidden');
-                proofSection.classList.add('hidden');
-                instapayBox.classList.add('hidden');
-                walletBox.classList.add('hidden');
-            } else {
-                addressBox.classList.remove('hidden');
-                tableBox.classList.add('hidden');
-                depositSection.classList.remove('hidden');
-                proofSection.classList.remove('hidden');
-            }
         }
 
         function renderBanner() {
@@ -474,6 +393,7 @@
                     id: p.id,
                     name: p.name,
                     price: p.price,
+                    category: p.category || "أخرى",
                     size: sizeVal,
                     qty: qty
                 });
@@ -527,123 +447,85 @@
             totalEl.innerText = total + " ج.م";
         }
 
-        function setDepositMethod(method) {
-            document.getElementById('deposit-method').value = method;
-            document.querySelectorAll('.dep-option-btn').forEach(btn => {
-                btn.className = "dep-option-btn text-xs bg-stone-900 text-stone-300 font-bold p-3 rounded-2xl border border-stone-800 transition cursor-pointer";
-            });
-            let activeBtn = document.getElementById(`dep-btn-${method}`);
-            if(activeBtn) {
-                activeBtn.className = "dep-option-btn text-xs bg-amber-600 text-white font-bold p-3 rounded-2xl border border-amber-500 transition cursor-pointer shadow-lg shadow-amber-600/40";
-            }
-            let instapayBox = document.getElementById('dep-instapay-box');
-            let walletBox = document.getElementById('dep-wallet-box');
-            instapayBox.classList.add('hidden');
-            walletBox.classList.add('hidden');
-
-            if(method === 'instapay') instapayBox.classList.remove('hidden');
-            else if(method === 'wallet') walletBox.classList.remove('hidden');
-        }
-
-        function openInstapayLink() {
-            window.open(settings.instapay, '_blank');
-        }
-
-        function selectWalletNetwork(net) {
-            let resultBox = document.getElementById('wallet-result-box');
-            let display = document.getElementById('wallet-number-display');
-            resultBox.classList.remove('hidden');
-            if(net === 'vodafone') activeWalletNum = settings.vodafone;
-            if(net === 'orange') activeWalletNum = settings.orange;
-            display.innerText = `رقم محفظة (${net.toUpperCase()}): ${activeWalletNum}`;
-        }
-
-        function copyWalletNumber() {
-            if(activeWalletNum) {
-                navigator.clipboard.writeText(activeWalletNum).then(() => alert("تم نسخ الرقم بنجاح! 📋"));
-            }
-        }
-
         function sendOrderDirectly() {
             let name = document.getElementById('cust-name').value.trim();
-            let orderType = document.getElementById('order-type').value;
-            let address = document.getElementById('cust-address').value.trim();
             let tableNum = document.getElementById('table-number').value.trim();
-            let depositMethod = document.getElementById('deposit-method').value;
-            let proofFile = document.getElementById('transfer-proof').files[0];
 
             if(!name) {
                 alert("من فضلك اكتب اسمك الكريم!");
                 return;
             }
+            if(!tableNum) {
+                alert("من فضلك اكتب رقم الطاولة داخل الكافيه!");
+                return;
+            }
             if(cart.length === 0) {
-                alert("السلة فارغة!");
+                alert("سلة الطلبات فارغة!");
                 return;
             }
 
-            if(orderType === 'table') {
-                if(!tableNum) {
-                    alert("من فضلك اكتب رقم الطاولة داخل الكافيه!");
-                    return;
-                }
-                processOrderSend(name, "أكل داخل الكافيه (طاولة: " + tableNum + ")", "", null);
-            } else {
-                if(!address) {
-                    alert("من فضلك اكتب العنوان بالتفصيل للتوصيل!");
-                    return;
-                }
-                if(!depositMethod) {
-                    alert("يجب اختيار طريقة دفع العربون لتأكيد الأوردر!");
-                    return;
-                }
-                if(!proofFile) {
-                    alert("يجب رفع سكرين شوت تحويل العربون!");
-                    return;
-                }
-
-                let reader = new FileReader();
-                reader.readAsDataURL(proofFile);
-                reader.onload = function(e) {
-                    processOrderSend(name, "دليفري - عنوان: " + address, depositMethod, e.target.result);
-                };
-            }
-        }
-
-        function processOrderSend(name, deliveryInfo, depositMethod, proofBase64) {
             let ordersCount = parseInt(localStorage.getItem('tapio_bellissimo_orders_count') || 0) + 1;
             localStorage.setItem('tapio_bellissimo_orders_count', ordersCount);
 
-            let orderId = "#BELL-" + Math.floor(1000 + Math.random() * 9000);
+            let orderId = "#TABLE-" + Math.floor(1000 + Math.random() * 9000);
+            
+            // فصل الأوردرات أوتوماتيك (مطبخ لأصناف الأكل وبار للمشروبات)
+            let kitchenItems = cart.filter(i => !i.category.includes('كافيه'));
+            let barItems = cart.filter(i => i.category.includes('كافيه'));
+
             let orderDetails = {
                 id: orderId,
                 date: new Date().toLocaleString('ar-EG'),
                 name: name,
-                deliveryInfo: deliveryInfo,
-                depositMethod: depositMethod ? (depositMethod === 'instapay' ? 'انستاباي' : 'محفظة إلكترونية') : 'طلب طاولة',
+                table: tableNum,
                 items: [...cart],
+                kitchenItems,
+                barItems,
                 total: cart.reduce((sum, i) => sum + (i.price * i.qty), 0),
-                proofImage: proofBase64
+                status: 'تحضير 🟢'
             };
 
             let savedOrders = JSON.parse(localStorage.getItem('tapio_bellissimo_saved_orders') || '[]');
             savedOrders.unshift(orderDetails);
             localStorage.setItem('tapio_bellissimo_saved_orders', JSON.stringify(savedOrders));
 
-            let orderText = `🍕 أوردر جديد من مطعم وكافيه Bellissimo:\n📌 رقم الطلب: ${orderId}\n\n👤 الاسم: ${name}\n📍 نوع الطلب: ${deliveryInfo}\n`;
-            if(depositMethod) orderText += `💳 العربون: ${orderDetails.depositMethod}\n`;
-            orderText += `\n📦 الأصناف المطلوبة:\n`;
-            let totalOrderPrice = 0;
+            // تشغيل شاشة التتبع الحي للزبون
+            startLiveTracking(orderId);
 
+            let orderText = `🪑 طلب طاولة جديد (صالة ذكية) - Bellissimo:\n📌 رقم الطلب: ${orderId}\n\n👤 اسم العميل: ${name}\n🪑 رقم الطاولة: ${tableNum}\n\n📦 الأصناف:\n`;
+            let totalOrderPrice = 0;
             cart.forEach(item => {
                 let itemTotal = item.price * item.qty;
                 totalOrderPrice += itemTotal;
                 orderText += `- ${item.name} | الحجم: ${item.size} | العدد: ${item.qty} | الإجمالي: ${itemTotal} ج.م\n`;
             });
-
             orderText += `\n💰 الإجمالي الكلي: ${totalOrderPrice} ج.م`;
 
             let phone = settings.whatsapp || "201000000000";
             window.open(`https://wa.me/${phone}?text=${encodeURIComponent(orderText)}`, '_blank');
+        }
+
+        function startLiveTracking(orderId) {
+            let box = document.getElementById('live-tracking-box');
+            let idEl = document.getElementById('track-order-id');
+            box.classList.remove('hidden');
+            idEl.innerText = orderId;
+
+            let step1 = document.getElementById('step-1');
+            let step2 = document.getElementById('step-2');
+            let step3 = document.getElementById('step-3');
+
+            step1.className = "flex items-center gap-2.5 text-amber-400 p-2.5 rounded-xl bg-amber-950/40 border border-amber-500/40 font-bold";
+            
+            setTimeout(() => {
+                step1.className = "flex items-center gap-2.5 text-stone-500 p-2.5 rounded-xl bg-stone-900/80 border border-stone-800";
+                step2.className = "flex items-center gap-2.5 text-amber-400 p-2.5 rounded-xl bg-amber-950/40 border border-amber-500/40 font-bold";
+            }, 5000);
+
+            setTimeout(() => {
+                step2.className = "flex items-center gap-2.5 text-stone-500 p-2.5 rounded-xl bg-stone-900/80 border border-stone-800";
+                step3.className = "flex items-center gap-2.5 text-emerald-400 p-2.5 rounded-xl bg-emerald-950/40 border border-emerald-500/40 font-bold";
+            }, 12000);
         }
 
         function openAdminModal() { document.getElementById('admin-modal').classList.remove('hidden'); }
@@ -652,46 +534,106 @@
             document.getElementById('admin-panel').classList.remove('hidden');
             document.getElementById('stat-visits').innerText = localStorage.getItem('tapio_bellissimo_visits') || 0;
             document.getElementById('stat-orders').innerText = localStorage.getItem('tapio_bellissimo_orders_count') || 0;
+            renderAdminProducts();
         }
         function closeAdminPanel() { document.getElementById('admin-panel').classList.add('hidden'); }
-        function openOrdersModal() {
+        
+        function openStaffKitchenModal() {
             document.getElementById('admin-panel').classList.add('hidden');
+            document.getElementById('staff-kitchen-modal').classList.remove('hidden');
+            renderStaffOrders();
+        }
+        function closeStaffKitchenModal() { document.getElementById('staff-kitchen-modal').classList.add('hidden'); }
+        
+        function openOrdersModal() {
+            document.getElementById('staff-kitchen-modal').classList.add('hidden');
             document.getElementById('orders-modal').classList.remove('hidden');
             renderSavedOrders();
         }
         function closeOrdersModal() {
             document.getElementById('orders-modal').classList.add('hidden');
-            document.getElementById('admin-panel').classList.remove('hidden');
+            document.getElementById('staff-kitchen-modal').classList.remove('hidden');
+        }
+
+        function switchStaffTab(tab) {
+            currentStaffTab = tab;
+            let btnK = document.getElementById('staff-tab-kitchen');
+            let btnB = document.getElementById('staff-tab-bar');
+            if(tab === 'kitchen') {
+                btnK.className = "flex-1 bg-amber-600 text-white text-xs py-2.5 rounded-xl font-bold cursor-pointer";
+                btnB.className = "flex-1 bg-stone-900 text-stone-300 text-xs py-2.5 rounded-xl font-bold cursor-pointer border border-stone-800";
+            } else {
+                btnB.className = "flex-1 bg-amber-600 text-white text-xs py-2.5 rounded-xl font-bold cursor-pointer";
+                btnK.className = "flex-1 bg-stone-900 text-stone-300 text-xs py-2.5 rounded-xl font-bold cursor-pointer border border-stone-800";
+            }
+            renderStaffOrders();
+        }
+
+        function renderStaffOrders() {
+            let container = document.getElementById('staff-orders-container');
+            let orders = JSON.parse(localStorage.getItem('tapio_bellissimo_saved_orders') || '[]');
+            
+            let filtered = orders.filter(o => {
+                if(currentStaffTab === 'kitchen') return o.kitchenItems && o.kitchenItems.length > 0;
+                return o.barItems && o.barItems.length > 0;
+            });
+
+            if(filtered.length === 0) {
+                container.innerHTML = `<p class="text-xs text-stone-500 text-center py-8">لا توجد أوردرات حالياً في هذا القسم..</p>`;
+                return;
+            }
+
+            container.innerHTML = '';
+            filtered.forEach((o, index) => {
+                let itemsList = (currentStaffTab === 'kitchen' ? o.kitchenItems : o.barItems).map(i => `• ${i.name} (الحجم: ${i.size} | العدد: ${i.qty})`).join('<br>');
+                container.innerHTML += `
+                    <div class="italian-card p-4 rounded-2xl space-y-2.5 text-xs shadow-lg border border-amber-500/30">
+                        <div class="flex justify-between items-center border-b border-stone-800 pb-2">
+                            <span class="font-black text-amber-400 text-sm">${o.id} - طاولة: ${o.table}</span>
+                            <span class="bg-emerald-600/20 text-emerald-400 px-2 py-0.5 rounded-md font-bold">${o.status}</span>
+                        </div>
+                        <p class="text-white"><strong>العميل:</strong> ${o.name}</p>
+                        <div class="bg-stone-900/90 p-2.5 rounded-xl text-stone-300 border border-stone-800">
+                            <strong>الأصناف المطلوبة:</strong><br>${itemsList}
+                        </div>
+                        <div class="flex justify-between items-center pt-2 font-bold border-t border-stone-800 mt-2">
+                            <span class="text-stone-400">${o.date}</span>
+                            <button type="button" onclick="markOrderReady(${index})" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-1.5 rounded-xl cursor-pointer font-bold">✨ تم التجهيز والتسليم</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function markOrderReady(index) {
+            let orders = JSON.parse(localStorage.getItem('tapio_bellissimo_saved_orders') || '[]');
+            orders[index].status = 'تم التسليم 🚀';
+            localStorage.setItem('tapio_bellissimo_saved_orders', JSON.stringify(orders));
+            renderStaffOrders();
+            alert("تم تحديث حالة الأوردر بنجاح! 🚀");
         }
 
         function renderSavedOrders() {
             let container = document.getElementById('saved-orders-list');
             let orders = JSON.parse(localStorage.getItem('tapio_bellissimo_saved_orders') || '[]');
             if(orders.length === 0) {
-                container.innerHTML = `<p class="text-xs text-stone-500 text-center py-8">لا توجد أوردرات حتى الآن..</p>`;
+                container.innerHTML = `<p class="text-xs text-stone-500 text-center py-8">لا توجد أوردرات مسجلة..</p>`;
                 return;
             }
             container.innerHTML = '';
             orders.forEach((o, index) => {
-                let itemsList = o.items.map(i => `• ${i.name} (الحجم: ${i.size} | العدد: ${i.qty})`).join('<br>');
-                let proofImgHTML = o.proofImage ? `<div class="mt-2.5"><span class="text-[10px] text-stone-400 block mb-1 font-semibold">سكرين شوت العربون:</span><a href="${o.proofImage}" target="_blank"><img src="${o.proofImage}" class="w-full h-36 object-cover rounded-xl border border-stone-800"></a></div>` : '';
-
+                let itemsList = o.items.map(i => `• ${i.name} (${i.size} | عدد: ${i.qty})`).join('<br>');
                 container.innerHTML += `
-                    <div class="italian-card p-4 rounded-2xl space-y-2.5 text-xs shadow-lg">
+                    <div class="italian-card p-4 rounded-2xl space-y-2 text-xs shadow-lg">
                         <div class="flex justify-between items-center border-b border-stone-800 pb-2">
-                            <span class="font-black text-amber-400 text-sm">${o.id}</span>
-                            <span class="text-[10px] text-stone-400">${o.date}</span>
+                            <span class="font-black text-amber-400">${o.id}</span>
+                            <span class="text-stone-400">طاولة: ${o.table}</span>
                         </div>
-                        <p class="text-white"><strong>العميل:</strong> ${o.name}</p>
-                        <p class="text-stone-300"><strong>الطلب:</strong> ${o.deliveryInfo}</p>
-                        <p class="text-amber-400"><strong>التفاصيل:</strong> ${o.depositMethod}</p>
-                        <div class="bg-stone-900/90 p-2.5 rounded-xl text-stone-300 border border-stone-800">
-                            <strong>الأصناف:</strong><br>${itemsList}
-                        </div>
-                        ${proofImgHTML}
-                        <div class="flex justify-between items-center pt-2 font-bold border-t border-stone-800 mt-2">
-                            <span class="text-stone-400">الإجمالي: <strong class="text-white text-sm">${o.total} ج.م</strong></span>
-                            <button type="button" onclick="deleteSavedOrder(${index})" class="text-red-400 cursor-pointer bg-red-950/40 px-3 py-1 rounded-lg border border-red-800/40 font-bold">حذف ✕</button>
+                        <p class="text-white"><strong>العميل:</strong> ${o.name} (${o.date})</p>
+                        <div class="bg-stone-900 p-2 rounded-xl text-stone-300">${itemsList}</div>
+                        <div class="flex justify-between items-center pt-1 font-bold">
+                            <span class="text-amber-400">الإجمالي: ${o.total} ج.م</span>
+                            <button type="button" onclick="deleteSavedOrder(${index})" class="text-red-400 cursor-pointer">حذف ✕</button>
                         </div>
                     </div>
                 `;
@@ -718,30 +660,8 @@
                 closeAdminModal();
                 document.getElementById('admin-pin').value = "";
                 openAdminPanel();
-                loadSettingsInput();
-                renderAdminProducts();
             } else {
                 alert("الرقم السري غير صحيح!");
-            }
-        }
-
-        function loadSettingsInput() {
-            document.getElementById('setting-banner-show').checked = settings.bannerShow !== false;
-            document.getElementById('setting-banner-tag').value = settings.bannerTag || '';
-            document.getElementById('setting-banner-title').value = settings.bannerTitle || '';
-            document.getElementById('setting-banner-desc').value = settings.bannerDesc || '';
-            document.getElementById('setting-whatsapp').value = settings.whatsapp || '';
-            document.getElementById('setting-instapay').value = settings.instapay || '';
-            document.getElementById('setting-vodafone').value = settings.vodafone || '';
-            document.getElementById('setting-orange').value = settings.orange || '';
-        }
-
-        function saveNewPin() {
-            let newPin = document.getElementById('setting-new-pin').value.trim();
-            if(newPin) {
-                adminPin = newPin;
-                localStorage.setItem('tapio_bellissimo_pin', newPin);
-                alert("تم تغيير الباسورد بنجاح!");
             }
         }
 
@@ -772,7 +692,7 @@
         }
 
         function saveNewProductObj(name, category, price, sizes, image) {
-            products.push({ id: Date.now(), name, category, price, available: true, sizes, colors: [], image });
+            products.push({ id: Date.now(), name, category, price, available: true, sizes, image });
             localStorage.setItem('tapio_bellissimo_products', JSON.stringify(products));
             renderCategories();
             renderProducts();
@@ -782,6 +702,7 @@
 
         function renderAdminProducts() {
             let container = document.getElementById('admin-products-list');
+            if(!container) return;
             container.innerHTML = '';
             products.forEach((p, index) => {
                 container.innerHTML += `
@@ -792,23 +713,9 @@
                                 ${p.available ? 'متاح 🟢' : 'خلصان 🔴'}
                             </button>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <input type="number" id="price-input-${index}" value="${p.price}" class="bg-stone-900 border border-stone-800 rounded-xl px-2.5 py-1 text-xs text-white w-24">
-                            <button type="button" onclick="updatePrice(${index})" class="bg-amber-600 text-white text-xs px-3 py-1 rounded-xl font-bold">حفظ السعر</button>
-                        </div>
                     </div>
                 `;
             });
-        }
-
-        function updatePrice(index) {
-            let newPrice = parseFloat(document.getElementById(`price-input-${index}`).value);
-            if(!isNaN(newPrice)) {
-                products[index].price = newPrice;
-                localStorage.setItem('tapio_bellissimo_products', JSON.stringify(products));
-                renderProducts();
-                alert("تم تحديث السعر!");
-            }
         }
 
         function toggleAvailability(index) {
@@ -819,32 +726,14 @@
         }
 
         function saveSettings() {
-            settings.bannerShow = document.getElementById('setting-banner-show').checked;
-            settings.bannerTag = document.getElementById('setting-banner-tag').value;
-            settings.bannerTitle = document.getElementById('setting-banner-title').value;
-            settings.bannerDesc = document.getElementById('setting-banner-desc').value;
             settings.whatsapp = document.getElementById('setting-whatsapp').value;
-            settings.instapay = document.getElementById('setting-instapay').value;
-            settings.vodafone = document.getElementById('setting-vodafone').value;
-            settings.orange = document.getElementById('setting-orange').value;
             localStorage.setItem('tapio_bellissimo_settings', JSON.stringify(settings));
-            renderBanner();
-            renderSocialLinks();
-            alert("تم حفظ إعدادات المطعم بنجاح! 🚀");
-        }
-
-        function renderSocialLinks() {
-            let container = document.getElementById('social-links-container');
-            container.innerHTML = '';
-            if(settings.whatsapp) {
-                container.innerHTML += `<a href="https://wa.me/${settings.whatsapp}" target="_blank" class="bg-emerald-600/20 border border-emerald-500/40 text-emerald-400 px-4 py-2 rounded-2xl text-xs font-bold flex items-center gap-1.5 transition hover:bg-emerald-600 hover:text-white shadow">💬 واتساب المطعم</a>`;
-            }
+            alert("تم حفظ الإعدادات بنجاح! 🚀");
         }
 
         renderBanner();
         renderCategories();
         renderProducts();
-        renderSocialLinks();
         renderCart();
     </script>
 </body>
