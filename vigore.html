@@ -10,6 +10,8 @@
         body { font-family: 'Cairo', sans-serif; background-color: #0b0f19; color: #f3f4f6; }
         .neon-glow { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
         .neon-border { border: 1px solid rgba(59, 130, 246, 0.4); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="min-h-screen pb-12">
@@ -35,10 +37,18 @@
         <!-- بانر العروض الديناميكي -->
         <div id="promo-banner-container"></div>
 
-        <h3 class="font-bold text-sm text-slate-400 mt-6 mb-2">🛒 اختر منتجاتك:</h3>
+        <!-- شريط تصفح الأقسام الأفقي -->
+        <div class="mt-4">
+            <h3 class="font-bold text-xs text-slate-400 mb-2">📂 أقسام المتجر:</h3>
+            <div id="categories-bar" class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+                <!-- سيتم تعبئتها ديناميكياً -->
+            </div>
+        </div>
 
-        <!-- قائمة المنتجات -->
-        <div id="products-list" class="space-y-4"></div>
+        <h3 class="font-bold text-sm text-slate-400 mt-4 mb-2">🛒 المنتجات المتاحة:</h3>
+
+        <!-- قائمة المنتجات بنظام الشبكة (Grid 2 Columns) -->
+        <div id="products-list" class="grid grid-cols-2 gap-3"></div>
 
         <!-- سلة المشتريات -->
         <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-3 mt-6">
@@ -197,12 +207,16 @@
                 <button type="button" onclick="saveNewPin()" class="w-full bg-amber-600 hover:bg-amber-500 text-white text-xs py-2 rounded-lg font-bold cursor-pointer">تغيير وحفظ الباسورد 🔑</button>
             </div>
 
-            <!-- إضافة صنف جديد -->
+            <!-- إضافة صنف جديد مع القسم -->
             <div class="bg-slate-900 border border-blue-500/40 p-3 rounded-xl space-y-3">
-                <h4 class="font-bold text-blue-400 text-sm">➕ إضافة صنف جديد للمتجر:</h4>
+                <h4 class="font-bold text-blue-400 text-sm">➕ إضافة صنف جديد (مع القسم):</h4>
                 <div>
                     <span class="text-xs text-slate-400 block mb-1">اسم المنتج:</span>
                     <input type="text" id="new-p-name" placeholder="مثال: تريننج شتوي جديد" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white">
+                </div>
+                <div>
+                    <span class="text-xs text-slate-400 block mb-1">القسم (مثل: تريننجات، تيشيرتات، شورتات):</span>
+                    <input type="text" id="new-p-category" value="تريننجات" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white">
                 </div>
                 <div class="grid grid-cols-2 gap-2">
                     <div>
@@ -210,13 +224,13 @@
                         <input type="number" id="new-p-price" placeholder="مثال: 550" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-sm text-white">
                     </div>
                     <div>
-                        <span class="text-xs text-slate-400 block mb-1">المقاسات (بينها فواصل):</span>
-                        <input type="text" id="new-p-sizes" value="M, L, XL, XXL" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-white">
+                        <span class="text-xs text-slate-400 block mb-1">المقاسات:</span>
+                        <input type="text" id="new-p-sizes" value="M, L, XL" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-white">
                     </div>
                 </div>
                 <div>
-                    <span class="text-xs text-slate-400 block mb-1">الألوان (بينها فواصل):</span>
-                    <input type="text" id="new-p-colors" value="أسود, كحلي, رمادي" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white">
+                    <span class="text-xs text-slate-400 block mb-1">الألوان:</span>
+                    <input type="text" id="new-p-colors" value="أسود, كحلي" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white">
                 </div>
                 <div>
                     <span class="text-xs text-slate-400 block mb-1">صورة المنتج:</span>
@@ -259,7 +273,7 @@
 
                 <h4 class="font-bold text-white text-sm pt-2 border-t border-slate-800">🌐 روابط التواصل الاجتماعي والواتساب:</h4>
                 <div>
-                    <span class="text-xs text-slate-400 block mb-1">رقم الواتساب لاستقبال الأوردرات (بالدولي مثل 2010...):</span>
+                    <span class="text-xs text-slate-400 block mb-1">رقم الواتساب لاستقبال الأوردرات:</span>
                     <input type="text" id="setting-whatsapp" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white">
                 </div>
                 <div>
@@ -293,9 +307,9 @@
         localStorage.setItem('tapio_vigor_visits', visits);
 
         let defaultProducts = [
-            { id: 1, name: "تريننج شتوي رياضي (Vigor)", price: 650, available: true, sizes: ["M", "L", "XL", "XXL"], colors: ["أسود", "كحلي", "رمادي"], image: "https://images.unsplash.com/photo-1518310383802-640c2de311b2?w=500" },
-            { id: 2, name: "تيشيرت جيم Dri-Fit", price: 250, available: true, sizes: ["S", "M", "L", "XL"], colors: ["أبيض", "أسود", "أزرق نيون"], image: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500" },
-            { id: 3, name: "شورت رياضي بجيوب بسحاب", price: 200, available: true, sizes: ["M", "L", "XL"], colors: ["أسود", "رمادي غامق"], image: "https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=500" }
+            { id: 1, name: "تريننج شتوي رياضي", price: 650, category: "تريننجات", available: true, sizes: ["M", "L", "XL"], colors: ["أسود", "كحلي"], image: "https://images.unsplash.com/photo-1518310383802-640c2de311b2?w=500" },
+            { id: 2, name: "تيشيرت جيم Dri-Fit", price: 250, category: "تيشيرتات", available: true, sizes: ["S", "M", "L"], colors: ["أبيض", "أسود"], image: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500" },
+            { id: 3, name: "شورت رياضي بسحاب", price: 200, category: "شورتات", available: true, sizes: ["M", "L", "XL"], colors: ["أسود", "رمادي"], image: "https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=500" }
         ];
 
         let products = JSON.parse(localStorage.getItem('tapio_vigor_products')) || defaultProducts;
@@ -320,6 +334,7 @@
         let cart = [];
         let selectedSelections = {};
         let activeWalletNum = "";
+        let currentCategory = "الكل";
 
         let logoClicks = 0;
         let logoTimer = null;
@@ -359,46 +374,88 @@
             `;
         }
 
+        function renderCategories() {
+            let container = document.getElementById('categories-bar');
+            let categories = ["الكل"];
+            products.forEach(p => {
+                let cat = p.category || "أخرى";
+                if(!categories.includes(cat)) categories.push(cat);
+            });
+
+            container.innerHTML = "";
+            categories.forEach(cat => {
+                let isActive = currentCategory === cat;
+                let btnClass = isActive 
+                    ? "bg-blue-600 text-white font-bold shadow-md shadow-blue-900/30" 
+                    : "bg-slate-900 text-slate-300 border border-slate-800 hover:border-blue-500/50";
+                
+                container.innerHTML += `
+                    <button type="button" onclick="filterCategory('${cat}')" class="text-xs px-3.5 py-2 rounded-xl transition whitespace-nowrap cursor-pointer ${btnClass}">
+                        ${cat}
+                    </button>
+                `;
+            });
+        }
+
+        function filterCategory(cat) {
+            currentCategory = cat;
+            renderCategories();
+            renderProducts();
+        }
+
         function renderProducts() {
             let container = document.getElementById('products-list');
             container.innerHTML = '';
             
-            products.forEach((p, index) => {
-                if(!p.available) return;
+            let filteredProducts = products.filter(p => {
+                if(!p.available) return false;
+                if(currentCategory === "الكل") return true;
+                return (p.category || "أخرى") === currentCategory;
+            });
+
+            if(filteredProducts.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-500 text-center py-6 col-span-2">لا توجد منتجات في هذا القسم حالياً..</p>`;
+                return;
+            }
+
+            filteredProducts.forEach((p) => {
+                let index = products.findIndex(item => item.id === p.id);
                 
-                let sizesHTML = p.sizes.map(s => `<button type="button" onclick="selectSize(${index}, '${s}')" id="size-${index}-${s}" class="size-btn-${index} text-xs border border-slate-700 px-3 py-1.5 rounded-lg text-slate-300 transition hover:border-blue-500 cursor-pointer">${s}</button>`).join('');
-                let colorsHTML = p.colors.map(c => `<button type="button" onclick="selectColor(${index}, '${c}')" id="color-${index}-${c}" class="color-btn-${index} text-xs border border-slate-700 px-3 py-1.5 rounded-lg text-slate-300 transition hover:border-blue-500 cursor-pointer">${c}</button>`).join('');
-                let imageHTML = p.image ? `<img src="${p.image}" alt="${p.name}" class="w-full h-48 object-cover rounded-xl mb-3 border border-slate-800">` : '';
+                let sizesHTML = p.sizes.map(s => `<button type="button" onclick="selectSize(${index}, '${s}')" id="size-${index}-${s}" class="size-btn-${index} text-[10px] border border-slate-700 px-2 py-1 rounded-md text-slate-300 transition hover:border-blue-500 cursor-pointer">${s}</button>`).join('');
+                let colorsHTML = p.colors.map(c => `<button type="button" onclick="selectColor(${index}, '${c}')" id="color-${index}-${c}" class="color-btn-${index} text-[10px] border border-slate-700 px-2 py-1 rounded-md text-slate-300 transition hover:border-blue-500 cursor-pointer">${c}</button>`).join('');
+                let imageHTML = p.image ? `<img src="${p.image}" alt="${p.name}" class="w-full h-32 object-cover rounded-xl mb-2 border border-slate-800">` : '';
 
                 container.innerHTML += `
-                    <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-3">
-                        ${imageHTML}
-                        <div class="flex justify-between items-start">
-                            <h4 class="font-bold text-white text-base">${p.name}</h4>
-                            <span class="text-blue-400 font-bold text-sm">${p.price} ج.م</span>
+                    <div class="bg-slate-900 border border-slate-800 p-3 rounded-2xl flex flex-col justify-between space-y-2">
+                        <div>
+                            ${imageHTML}
+                            <span class="text-[9px] bg-blue-950 text-blue-400 px-2 py-0.5 rounded border border-blue-500/30">${p.category || 'عام'}</span>
+                            <h4 class="font-bold text-white text-xs mt-1 line-clamp-1">${p.name}</h4>
+                            <span class="text-blue-400 font-bold text-xs mt-0.5 block">${p.price} ج.م</span>
                         </div>
                         
-                        <div>
-                            <span class="text-[11px] text-slate-400 block mb-1">اختر المقاس:</span>
-                            <div class="flex gap-2 flex-wrap">${sizesHTML}</div>
-                        </div>
-
-                        <div>
-                            <span class="text-[11px] text-slate-400 block mb-1">اختر اللون:</span>
-                            <div class="flex gap-2 flex-wrap">${colorsHTML}</div>
-                        </div>
-
-                        <div class="flex items-center justify-between pt-2 border-t border-slate-800/60">
-                            <span class="text-xs text-slate-400">الكمية:</span>
-                            <div class="flex items-center gap-3 bg-slate-800 px-3 py-1 rounded-xl">
-                                <button type="button" onclick="changeQty(${index}, -1)" class="text-blue-400 font-bold text-lg px-2 cursor-pointer">-</button>
-                                <span id="qty-${index}" class="font-bold text-white text-sm">1</span>
-                                <button type="button" onclick="changeQty(${index}, 1)" class="text-blue-400 font-bold text-lg px-2 cursor-pointer">+</button>
+                        <div class="space-y-1.5 pt-1 border-t border-slate-800">
+                            <div>
+                                <span class="text-[9px] text-slate-400 block">المقاس:</span>
+                                <div class="flex gap-1 flex-wrap">${sizesHTML}</div>
+                            </div>
+                            <div>
+                                <span class="text-[9px] text-slate-400 block">اللون:</span>
+                                <div class="flex gap-1 flex-wrap">${colorsHTML}</div>
                             </div>
                         </div>
 
-                        <button type="button" onclick="addToCart(${index})" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-xl transition text-xs cursor-pointer shadow-md shadow-blue-900/30">
-                            🛒 إضافة إلى السلة
+                        <div class="flex items-center justify-between pt-1">
+                            <span class="text-[10px] text-slate-400">الكمية:</span>
+                            <div class="flex items-center gap-2 bg-slate-800 px-2 py-0.5 rounded-lg">
+                                <button type="button" onclick="changeQty(${index}, -1)" class="text-blue-400 font-bold text-sm px-1 cursor-pointer">-</button>
+                                <span id="qty-${index}" class="font-bold text-white text-xs">1</span>
+                                <button type="button" onclick="changeQty(${index}, 1)" class="text-blue-400 font-bold text-sm px-1 cursor-pointer">+</button>
+                            </div>
+                        </div>
+
+                        <button type="button" onclick="addToCart(${index})" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 rounded-xl transition text-[11px] cursor-pointer shadow-md shadow-blue-900/30 mt-1">
+                            🛒 إضافة للسلة
                         </button>
                     </div>
                 `;
@@ -643,12 +700,16 @@
         function closeAdminPanel() { document.getElementById('admin-panel').classList.add('hidden'); }
 
         function openOrdersModal() {
-            document.getElementById('orders-modal').classList.remove('hidden');
-            renderSavedOrders();
+            let modal = document.getElementById('orders-modal');
+            if(modal) {
+                modal.classList.remove('hidden');
+                renderSavedOrders();
+            }
         }
 
         function closeOrdersModal() {
-            document.getElementById('orders-modal').classList.add('hidden');
+            let modal = document.getElementById('orders-modal');
+            if(modal) modal.classList.add('hidden');
         }
 
         function renderSavedOrders() {
@@ -742,6 +803,7 @@
 
         function addNewProduct() {
             let name = document.getElementById('new-p-name').value.trim();
+            let category = document.getElementById('new-p-category').value.trim() || "تريننجات";
             let price = parseFloat(document.getElementById('new-p-price').value);
             let sizesStr = document.getElementById('new-p-sizes').value.trim();
             let colorsStr = document.getElementById('new-p-colors').value.trim();
@@ -771,20 +833,21 @@
                         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                         let compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
                         
-                        saveNewProductObj(name, price, sizes, colors, compressedDataUrl);
+                        saveNewProductObj(name, category, price, sizes, colors, compressedDataUrl);
                     };
                     img.src = e.target.result;
                 };
                 reader.readAsDataURL(file);
             } else {
-                saveNewProductObj(name, price, sizes, colors, "https://images.unsplash.com/photo-1518310383802-640c2de311b2?w=500");
+                saveNewProductObj(name, category, price, sizes, colors, "https://images.unsplash.com/photo-1518310383802-640c2de311b2?w=500");
             }
         }
 
-        function saveNewProductObj(name, price, sizes, colors, image) {
+        function saveNewProductObj(name, category, price, sizes, colors, image) {
             let newProd = {
                 id: Date.now(),
                 name: name,
+                category: category,
                 price: price,
                 available: true,
                 sizes: sizes,
@@ -793,6 +856,7 @@
             };
             products.push(newProd);
             localStorage.setItem('tapio_vigor_products', JSON.stringify(products));
+            renderCategories();
             renderProducts();
             renderAdminProducts();
             
@@ -859,7 +923,7 @@
                 container.innerHTML += `
                     <div class="bg-slate-900 border border-slate-800 p-3 rounded-xl space-y-3">
                         <div class="flex justify-between items-center">
-                            <span class="font-bold text-white text-sm">${p.name}</span>
+                            <span class="font-bold text-white text-sm">${p.name} <span class="text-xs text-blue-400">(${p.category || 'عام'})</span></span>
                             <button type="button" onclick="toggleAvailability(${index})" class="text-xs px-2.5 py-1 rounded-lg cursor-pointer ${p.available ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'}">
                                 ${p.available ? 'متاح للبيع 🟢' : 'خلصان 🔴'}
                             </button>
@@ -932,6 +996,7 @@
 
         renderHeader();
         renderBanner();
+        renderCategories();
         renderProducts();
         renderSocialLinks();
     </script>
