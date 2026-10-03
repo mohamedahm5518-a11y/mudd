@@ -91,9 +91,9 @@
             <input type="text" id="cust-name" placeholder="اسمك الكريم..." class="w-full bg-stone-900/90 border border-stone-700/80 rounded-2xl p-3.5 text-sm text-white focus:outline-none focus:border-amber-500 transition">
             <input type="text" id="table-number" placeholder="رقم الطاولة في الكافيه (مثال: Table 4)..." class="w-full bg-stone-900/90 border border-stone-700/80 rounded-2xl p-3.5 text-sm text-white focus:outline-none focus:border-amber-500 transition">
             
-            <!-- أزرار خدمة الطاولة السريعة (طلب الويتر أو الحساب) -->
+            <!-- أزرار خدمة الطاولة السريعة -->
             <div class="grid grid-cols-2 gap-2 pt-1">
-                <button type="button" onclick="sendServicePing('استدعاء الويتر 🛎️')" class="bg-stone-900 hover:bg-stone-800 border border-stone-700 text-amber-400 text-xs py-3 rounded-xl font-bold cursor-pointer transition flex items-center justify-center gap-1">
+                <button type="button" onclick="sendServicePing('استدعاء الويتر 🛎️️')" class="bg-stone-900 hover:bg-stone-800 border border-stone-700 text-amber-400 text-xs py-3 rounded-xl font-bold cursor-pointer transition flex items-center justify-center gap-1">
                     🛎️ استدعاء الويتر
                 </button>
                 <button type="button" onclick="sendServicePing('طلب الحساب / Bill 🧾')" class="bg-stone-900 hover:bg-stone-800 border border-stone-700 text-amber-400 text-xs py-3 rounded-xl font-bold cursor-pointer transition flex items-center justify-center gap-1">
@@ -143,7 +143,7 @@
         </div>
     </div>
 
-    <!-- شاشة المطبخ والاستاف الذكية (Station Handoff) مع التزامن التلقائي وصوت الجرس -->
+    <!-- شاشة المطبخ والاستاف الذكية (Station Handoff) -->
     <div id="staff-kitchen-modal" class="fixed inset-0 bg-stone-950 hidden z-60 overflow-y-auto p-4">
         <div class="max-w-md mx-auto space-y-4 py-6">
             <div class="flex justify-between items-center border-b border-stone-800 pb-3">
@@ -154,6 +154,11 @@
                 <button onclick="closeStaffKitchenModal()" class="bg-stone-800 px-3.5 py-2 rounded-xl text-xs text-white cursor-pointer font-bold">إغلاق ✕</button>
             </div>
             
+            <!-- زر تفعيل صوت الجرس الإجباري لمتصفحات الموبايل -->
+            <button type="button" onclick="initAudio()" class="w-full bg-amber-600/20 hover:bg-amber-600/30 border border-amber-500/50 text-amber-400 text-xs py-2.5 rounded-xl font-bold cursor-pointer transition flex items-center justify-center gap-2">
+                🔔 اضغط هنا لتفعيل صوت التنبيه للمطبخ أول مرة
+            </button>
+
             <div class="flex gap-2">
                 <button onclick="switchStaffTab('kitchen')" id="staff-tab-kitchen" class="flex-1 bg-amber-600 text-white text-xs py-2.5 rounded-xl font-bold cursor-pointer">🍕 أوردرات المطبخ</button>
                 <button onclick="switchStaffTab('bar')" id="staff-tab-bar" class="flex-1 bg-stone-900 text-stone-300 text-xs py-2.5 rounded-xl font-bold cursor-pointer border border-stone-800">☕ أوردرات البار</button>
@@ -173,7 +178,7 @@
                 <button onclick="closeOrdersModal()" class="bg-stone-800 px-3.5 py-2 rounded-xl text-xs text-white cursor-pointer font-bold">إغلاق ✕</button>
             </div>
             <div id="saved-orders-list" class="space-y-3"></div>
-            <button onclick="clearAllOrders()" class="w-full bg-red-950/60 border border-red-700/50 text-red-400 py-3 rounded-2xl text-xs font-bold cursor-pointer">🗑️ مسح السجل بالكامل</button>
+            <button onclick="clearAllOrders()" class="w-full bg-red-950/60 border border-red-700/50 text-red-400 py-3 rounded-2xl text-xs font-bold cursor-pointer">🗑️️ مسح السجل بالكامل</button>
         </div>
     </div>
 
@@ -257,25 +262,52 @@
         let selectedSelections = {};
         let currentCategory = "الكل";
         let currentStaffTab = "kitchen";
+        let audioCtx = null;
 
-        // تشغيل صوت التنبيه (بيل مطعم) أوتوماتيك
+        // تهيئة الصوت (يتم تفعيلها بضغطة زر من الشيف لتجاوز أمان متصفح الموبايل)
+        function initAudio() {
+            try {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                playChimeSound();
+                alert("تم تفعيل صوت التنبيه بنجاح! 🔔 سيسمع الشيف الجرس فور نزول أي أوردر.");
+            } catch(e) {
+                alert("التصفح لا يدعم الصوت التلقائي.");
+            }
+        }
+
+        // تشغيل صوت جرس المطعم الحقيقي
         function playChimeSound() {
             try {
-                let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                
                 let osc = audioCtx.createOscillator();
                 let gain = audioCtx.createGain();
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(880, audioCtx.currentTime); // نغمة واضحة
-                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1.2);
+                osc.frequency.setValueAtTime(950, audioCtx.currentTime); // نغمة بيل حادة وواضحة
+                osc.frequency.exponentialRampToValueAtTime(450, audioCtx.currentTime + 1.5);
+                
+                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1.5);
+                
                 osc.connect(gain);
                 gain.connect(audioCtx.destination);
+                
                 osc.start();
-                osc.stop(audioCtx.currentTime + 1.2);
-            } catch(e) { console.log("Audio not allowed yet"); }
+                osc.stop(audioCtx.currentTime + 1.5);
+            } catch(e) {
+                console.log("Audio alert error:", e);
+            }
         }
 
-        // التزامن التلقائي الفوري بين الأجهزة (Auto-Sync)
+        // التزامن اللحظي التلقائي مع رنين الجرس أوتوماتيك
         window.addEventListener('storage', function(e) {
             if(e.key === 'tapio_bellissimo_saved_orders') {
                 playChimeSound();
@@ -484,7 +516,6 @@
             totalEl.innerText = total + " ج.م";
         }
 
-        // إرسال طلب خدمة سريع (استدعاء الويتر أو الحساب)
         function sendServicePing(serviceType) {
             let name = document.getElementById('cust-name').value.trim();
             let tableNum = document.getElementById('table-number').value.trim();
@@ -665,7 +696,6 @@
             filtered.forEach((o, index) => {
                 let itemsList = (currentStaffTab === 'kitchen' ? o.kitchenItems : o.barItems).map(i => `• ${i.name} (الحجم: ${i.size} | العدد: ${i.qty})`).join('<br>');
                 
-                // حساب عداد الوقت وتنبيه التأخير (أكثر من 10 دقائق ينور أحمر)
                 let elapsedMinutes = o.timestamp ? Math.floor((Date.now() - o.timestamp) / 60000) : 0;
                 let isDelayed = elapsedMinutes >= 10;
                 let timerBadge = isDelayed 
@@ -828,3 +858,4 @@
     </script>
 </body>
 </html>
+
